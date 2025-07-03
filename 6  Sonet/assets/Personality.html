@@ -1,0 +1,1473 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonet - Personality Intelligence System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+            min-height: 100vh;
+            color: #1e293b;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #1e293b, #475569, #64748b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: #64748b;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .upload-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .upload-area {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .upload-area:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: #3b82f6;
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-area.dragover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            transform: scale(1.02);
+        }
+
+        .upload-area.uploaded {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: #22c55e;
+            border-style: solid;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover .upload-icon {
+            transform: scale(1.1);
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .success-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #22c55e;
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            animation: successPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes successPop {
+            0% { transform: scale(0) rotate(180deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .upload-area.uploaded .success-indicator {
+            display: flex;
+        }
+
+        .file-upload {
+            display: none;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .glass-button {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            padding: 1.2rem 2.5rem;
+            color: #1e293b;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .glass-button:hover::before {
+            left: 100%;
+        }
+
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .glass-button:active {
+            transform: translateY(-1px);
+        }
+
+        .glass-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .personality-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        .personality-card {
+            backdrop-filter: blur(25px);
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 28px;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .personality-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .personality-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .personality-card:hover {
+            transform: translateY(-12px) scale(1.01);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .personality-card:hover::before {
+            opacity: 1;
+        }
+
+        .personality-card:hover::after {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #8b5cf6, #06b6d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, #4f46e5, #8b5cf6, #06b6d4, #0ea5e9);
+            border-radius: 50%;
+            z-index: -1;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .avatar::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%);
+            z-index: 1;
+        }
+
+        .card-title {
+            flex: 1;
+        }
+
+        .card-title h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .card-title .subtitle {
+            color: #64748b;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .personality-section {
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #374151;
+        }
+
+        .section-content {
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .trait-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .trait-tag {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #3730a3;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .trait-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .compatibility-meter {
+            background: rgba(226, 232, 240, 0.5);
+            border-radius: 12px;
+            height: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .compatibility-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 12px;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .section-content p {
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            font-size: 1.3rem;
+            color: #64748b;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3b82f6;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 4rem;
+            color: #64748b;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .no-data h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #374151;
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            display: none;
+        }
+
+        .status-indicator.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .personality-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .upload-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        /* Enhanced visual effects */
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.05);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-circle:nth-child(1) {
+            width: 60px;
+            height: 60px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-circle:nth-child(2) {
+            width: 40px;
+            height: 40px;
+            top: 70%;
+            right: 20%;
+            animation-delay: 2s;
+        }
+
+        .floating-circle:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            bottom: 10%;
+            left: 30%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Sonet Intelligence</h1>
+            <p>Advanced Personality Analysis & Social Intelligence System</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-area" id="friends-upload" ondrop="handleDrop(event, 'friends')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" onclick="document.getElementById('friends-file').click()">
+                <div class="success-indicator">✓</div>
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Friends Data</div>
+                <div class="upload-subtext">Click or drag Friends.txt here</div>
+            </div>
+            <input type="file" id="friends-file" class="file-upload" accept=".txt">
+
+            <div class="upload-area" id="groups-upload" ondrop="handleDrop(event, 'groups')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" onclick="document.getElementById('groups-file').click()">
+                <div class="success-indicator">✓</div>
+                <div class="upload-icon">👥</div>
+                <div class="upload-text">Groups Data</div>
+                <div class="upload-subtext">Click or drag Groups.txt here</div>
+            </div>
+            <input type="file" id="groups-file" class="file-upload" accept=".txt">
+        </div>
+
+        <div class="controls">
+            <button class="glass-button" onclick="analyzePersonalities()" disabled id="analyze-btn">🧠 Analyze Personalities</button>
+            <button class="glass-button" onclick="generateCompatibilityMatrix()" disabled id="compatibility-btn">💝 Compatibility Matrix</button>
+            <button class="glass-button" onclick="predictFriendGroups()" disabled id="groups-btn">🔮 Predict Friend Dynamics</button>
+        </div>
+
+        <div id="results-container">
+            <div class="no-data">
+                <h3>Welcome to Sonet Intelligence</h3>
+                <p>Upload your Friends.txt and Groups.txt files to begin analyzing personalities and relationships with our advanced AI algorithms.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-indicator" id="status-indicator">
+        <div id="status-message"></div>
+    </div>
+
+    <script>
+        let friendsData = [];
+        let groupsData = [];
+        let friendsUploaded = false;
+        let groupsUploaded = false;
+
+        // File upload handlers
+        document.getElementById('friends-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileUpload(file, 'friends');
+            }
+        });
+
+        document.getElementById('groups-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileUpload(file, 'groups');
+            }
+        });
+
+        // Drag and drop handlers
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(e, type) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0], type);
+            }
+        }
+
+        function handleFileUpload(file, type) {
+            if (!file.name.toLowerCase().endsWith('.txt')) {
+                showStatus('Please upload a .txt file', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (type === 'friends') {
+                    parseFriendsData(e.target.result);
+                    friendsUploaded = true;
+                    document.getElementById('friends-upload').classList.add('uploaded');
+                    showStatus('Friends data uploaded successfully!', 'success');
+                } else {
+                    parseGroupsData(e.target.result);
+                    groupsUploaded = true;
+                    document.getElementById('groups-upload').classList.add('uploaded');
+                    showStatus('Groups data uploaded successfully!', 'success');
+                }
+                
+                updateButtonStates();
+            };
+            reader.readAsText(file);
+        }
+
+        function updateButtonStates() {
+            const buttons = ['analyze-btn', 'compatibility-btn', 'groups-btn'];
+            const shouldEnable = friendsUploaded && groupsUploaded;
+            
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                btn.disabled = !shouldEnable;
+            });
+
+            if (shouldEnable) {
+                showResults('<div class="no-data"><h3>Ready for Analysis!</h3><p>Both files uploaded successfully. Click any analysis button above to begin.</p></div>');
+            }
+        }
+
+        function showStatus(message, type) {
+            const indicator = document.getElementById('status-indicator');
+            const messageEl = document.getElementById('status-message');
+            
+            messageEl.textContent = message;
+            indicator.className = `status-indicator show ${type}`;
+            
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 3000);
+        }
+
+        function parseFriendsData(data) {
+            friendsData = [];
+            const friends = data.split('------------------------').filter(f => f.trim());
+            
+            friends.forEach(friend => {
+                const lines = friend.trim().split('\n');
+                const friendObj = {};
+                
+                lines.forEach(line => {
+                    const [key, ...valueParts] = line.split(':');
+                    if (key && valueParts.length > 0) {
+                        friendObj[key.trim().toLowerCase()] = valueParts.join(':').trim();
+                    }
+                });
+                
+                if (friendObj.name) {
+                    friendsData.push(friendObj);
+                }
+            });
+        }
+
+        function parseGroupsData(data) {
+            groupsData = [];
+            const groups = data.split('------------------------').filter(g => g.trim());
+            
+            groups.forEach(group => {
+                const lines = group.trim().split('\n');
+                const groupObj = { members: [] };
+                
+                lines.forEach(line => {
+                    const [key, value] = line.split(':');
+                    if (key && value) {
+                        const keyTrim = key.trim().toLowerCase();
+                        const valueTrim = value.trim();
+                        
+                        if (keyTrim === 'group') {
+                            groupObj.name = valueTrim;
+                        } else if (keyTrim === 'member') {
+                            groupObj.members.push(valueTrim);
+                        }
+                    }
+                });
+                
+                if (groupObj.name) {
+                    groupsData.push(groupObj);
+                }
+            });
+        }
+
+        function analyzePersonalities() {
+            if (friendsData.length === 0) {
+                showStatus('No friends data available. Please upload Friends.txt first.', 'error');
+                return;
+            }
+
+            showLoading();
+
+            setTimeout(() => {
+                const personalities = friendsData.map(friend => generatePersonalityProfile(friend));
+                displayPersonalities(personalities);
+            }, 1500);
+        }
+
+        function generatePersonalityProfile(friend) {
+            const interests = friend.interests ? friend.interests.split(',').map(i => i.trim()) : [];
+            const notes = friend.notes || '';
+            const birthday = friend.birthday || '';
+            
+            // Advanced personality analysis algorithm
+            const personalityTraits = analyzePersonalityTraits(interests, notes, birthday);
+            const socialProfile = analyzeSocialProfile(friend);
+            const predictions = generatePersonalityPredictions(personalityTraits, interests);
+            
+            return {
+                name: friend.name,
+                email: friend.email,
+                birthday: birthday,
+                traits: personalityTraits,
+                social: socialProfile,
+                predictions: predictions,
+                interests: interests,
+                notes: notes
+            };
+        }
+
+        function analyzePersonalityTraits(interests, notes, birthday) {
+            const traits = [];
+            const scores = {};
+            
+            // Interest-based analysis
+            const interestMap = {
+                'coding': { tech: 0.9, analytical: 0.8, creative: 0.6, introverted: 0.7 },
+                'gaming': { competitive: 0.8, strategic: 0.7, social: 0.6, patient: 0.5 },
+                'sleeping': { relaxed: 0.9, peaceful: 0.8, introspective: 0.7 },
+                'watching movies': { creative: 0.7, empathetic: 0.6, cultural: 0.8 },
+                'reels': { trendy: 0.9, social: 0.8, visual: 0.7, modern: 0.9 },
+                'helping': { empathetic: 0.9, altruistic: 0.8, social: 0.7, caring: 0.9 }
+            };
+            
+            interests.forEach(interest => {
+                const key = interest.toLowerCase();
+                if (interestMap[key]) {
+                    Object.entries(interestMap[key]).forEach(([trait, score]) => {
+                        scores[trait] = (scores[trait] || 0) + score;
+                    });
+                }
+            });
+            
+            // Notes analysis
+            const noteKeywords = {
+                'brother': { familyOriented: 0.9, loyal: 0.8, protective: 0.7 },
+                'hey': { casual: 0.7, friendly: 0.8, approachable: 0.6 },
+                'idk': { mysterious: 0.6, humble: 0.5, unpredictable: 0.7 }
+            };
+            
+            Object.entries(noteKeywords).forEach(([keyword, traits]) => {
+                if (notes.toLowerCase().includes(keyword)) {
+                    Object.entries(traits).forEach(([trait, score]) => {
+                        scores[trait] = (scores[trait] || 0) + score;
+                    });
+                }
+            });
+            
+            // Convert scores to traits
+            Object.entries(scores).forEach(([trait, score]) => {
+                if (score > 0.5) {
+                    traits.push({
+                        name: trait.charAt(0).toUpperCase() + trait.slice(1),
+                        strength: Math.min(score, 1.0)
+                    });
+                }
+            });
+            
+            return traits.sort((a, b) => b.strength - a.strength).slice(0, 6);
+        }
+
+        function analyzeSocialProfile(friend) {
+            const groups = groupsData.filter(g => g.members.includes(friend.name));
+            const groupTypes = groups.map(g => g.name);
+            
+            let socialType = 'Balanced Socializer';
+            let socialScore = 0.5;
+            
+            if (groupTypes.some(g => g.toLowerCase().includes('close'))) {
+                socialType = 'Intimate Circle Builder';
+                socialScore = 0.8;
+            } else if (groupTypes.length > 2) {
+                socialType = 'Social Butterfly';
+                socialScore = 0.9;
+            } else if (groupTypes.some(g => g.toLowerCase().includes('family'))) {
+                socialType = 'Family-Centered';
+                socialScore = 0.6;
+            } else if (groupTypes.some(g => g.toLowerCase().includes('work'))) {
+                socialType = 'Professional Networker';
+                socialScore = 0.7;
+            }
+            
+            return {
+                type: socialType,
+                score: socialScore,
+                groups: groupTypes,
+                connections: groups.length
+            };
+        }
+        function generatePersonalityProfile(friend) {
+            const interests = friend.interests ? friend.interests.split(',').map(i => i.trim()) : [];
+            const notes = friend.notes || '';
+            const birthday = friend.birthday || '';
+            
+            // Advanced personality analysis algorithm
+            const personalityTraits = analyzePersonalityTraits(interests, notes, birthday);
+            const socialProfile = analyzeSocialProfile(friend);
+            const predictions = generatePersonalityPredictions(personalityTraits, interests);
+            
+            return {
+                name: friend.name,
+                email: friend.email,
+                birthday: birthday,
+                traits: personalityTraits,
+                social: socialProfile,
+                predictions: predictions,
+                interests: interests,
+                notes: notes
+            };
+        }
+
+        function analyzePersonalityTraits(interests, notes, birthday) {
+            const traits = [];
+            const scores = {};
+            
+            // Interest-based analysis
+            const interestMap = {
+                'coding': { tech: 0.9, analytical: 0.8, creative: 0.6, introverted: 0.7 },
+                'gaming': { competitive: 0.8, strategic: 0.7, social: 0.6, patient: 0.5 },
+                'sleeping': { relaxed: 0.9, peaceful: 0.8, introspective: 0.7 },
+                'watching movies': { creative: 0.7, empathetic: 0.6, cultural: 0.8 },
+                'reels': { trendy: 0.9, social: 0.8, visual: 0.7, modern: 0.9 },
+                'helping': { empathetic: 0.9, altruistic: 0.8, social: 0.7, caring: 0.9 }
+            };
+            
+            interests.forEach(interest => {
+                const key = interest.toLowerCase();
+                if (interestMap[key]) {
+                    Object.entries(interestMap[key]).forEach(([trait, score]) => {
+                        scores[trait] = (scores[trait] || 0) + score;
+                    });
+                }
+            });
+            
+            // Notes analysis
+            const noteKeywords = {
+                'brother': { familyOriented: 0.9, loyal: 0.8, protective: 0.7 },
+                'hey': { casual: 0.7, friendly: 0.8, approachable: 0.6 },
+                'idk': { mysterious: 0.6, humble: 0.5, unpredictable: 0.7 }
+            };
+            
+            Object.entries(noteKeywords).forEach(([keyword, traits]) => {
+                if (notes.toLowerCase().includes(keyword)) {
+                    Object.entries(traits).forEach(([trait, score]) => {
+                        scores[trait] = (scores[trait] || 0) + score;
+                    });
+                }
+            });
+            
+            // Convert scores to traits
+            Object.entries(scores).forEach(([trait, score]) => {
+                if (score > 0.5) {
+                    traits.push({
+                        name: trait.charAt(0).toUpperCase() + trait.slice(1),
+                        strength: Math.min(score, 1.0)
+                    });
+                }
+            });
+            
+            return traits.sort((a, b) => b.strength - a.strength).slice(0, 6);
+        }
+
+        function analyzeSocialProfile(friend) {
+            const groups = groupsData.filter(g => g.members.includes(friend.name));
+            const groupTypes = groups.map(g => g.name);
+            
+            let socialType = 'Balanced Socializer';
+            let socialScore = 0.5;
+            
+            if (groupTypes.some(g => g.toLowerCase().includes('close'))) {
+                socialType = 'Intimate Circle Builder';
+                socialScore = 0.8;
+            } else if (groupTypes.length > 2) {
+                socialType = 'Social Butterfly';
+                socialScore = 0.9;
+            } else if (groupTypes.some(g => g.toLowerCase().includes('family'))) {
+                socialType = 'Family-Centered';
+                socialScore = 0.6;
+            } else if (groupTypes.some(g => g.toLowerCase().includes('work'))) {
+                socialType = 'Professional Networker';
+                socialScore = 0.7;
+            }
+            
+            return {
+                type: socialType,
+                score: socialScore,
+                groups: groupTypes,
+                connections: groups.length
+            };
+        }
+
+        function generatePersonalityPredictions(traits, interests) {
+            const predictions = [];
+            
+            // Generate fun predictions based on traits and interests
+            const predictionTemplates = [
+                "Likely to spend weekends {activity} and feel energized by {trait}",
+                "Probably {behavior} in group settings and enjoys {preference}",
+                "Has a tendency to {habit} when stressed and finds peace in {activity}",
+                "Most productive during {time} and motivated by {motivation}"
+            ];
+            
+            const activities = {
+                'coding': 'building amazing projects',
+                'gaming': 'exploring virtual worlds',
+                'sleeping': 'recharging peacefully',
+                'watching movies': 'diving into stories',
+                'reels': 'staying updated with trends',
+                'helping': 'supporting others'
+            };
+            
+            const behaviors = {
+                'social': 'initiates conversations',
+                'analytical': 'observes before participating',
+                'creative': 'brings fresh ideas',
+                'competitive': 'enjoys friendly challenges'
+            };
+            
+            // Generate 3-4 unique predictions
+            const topTraits = traits.slice(0, 3);
+            topTraits.forEach((trait, index) => {
+                const template = predictionTemplates[index % predictionTemplates.length];
+                const activity = activities[interests[index % interests.length]?.toLowerCase()] || 'pursuing their interests';
+                const behavior = behaviors[trait.name.toLowerCase()] || 'expresses their unique personality';
+                
+                predictions.push(
+                    template
+                        .replace('{activity}', activity)
+                        .replace('{trait}', trait.name.toLowerCase())
+                        .replace('{behavior}', behavior)
+                        .replace('{preference}', activity)
+                        .replace('{habit}', behavior)
+                        .replace('{time}', index % 2 === 0 ? 'morning hours' : 'evening time')
+                        .replace('{motivation}', trait.name.toLowerCase())
+                );
+            });
+            
+            return predictions;
+        }
+
+        function displayPersonalities(personalities) {
+            const html = `
+                <div class="personality-grid">
+                    ${personalities.map(person => `
+                        <div class="personality-card">
+                            <div class="card-header">
+                                <div class="avatar">${person.name.charAt(0)}</div>
+                                <div class="card-title">
+                                    <h3>${person.name}</h3>
+                                    <div class="subtitle">${person.social.type}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="personality-section">
+                                <div class="section-title">🧠 Core Traits</div>
+                                <div class="section-content">
+                                    <div class="trait-tags">
+                                        ${person.traits.map(trait => 
+                                            `<span class="trait-tag">${trait.name} (${Math.round(trait.strength * 100)}%)</span>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="personality-section">
+                                <div class="section-title">🌟 Social Profile</div>
+                                <div class="section-content">
+                                    <p><strong>${person.social.type}</strong></p>
+                                    <p>Groups: ${person.social.groups.join(', ') || 'None'}</p>
+                                    <div class="compatibility-meter">
+                                        <div class="compatibility-fill" style="width: ${person.social.score * 100}%"></div>
+                                    </div>
+                                    <small>Social Engagement: ${Math.round(person.social.score * 100)}%</small>
+                                </div>
+                            </div>
+                            
+                            <div class="personality-section">
+                                <div class="section-title">🔮 AI Predictions</div>
+                                <div class="section-content">
+                                    ${person.predictions.map(pred => `<p>• ${pred}</p>`).join('')}
+                                </div>
+                            </div>
+                            
+                            <div class="personality-section">
+                                <div class="section-title">💡 Interests & Notes</div>
+                                <div class="section-content">
+                                    <p><strong>Interests:</strong> ${person.interests.join(', ')}</p>
+                                    ${person.notes ? `<p><strong>Notes:</strong> ${person.notes}</p>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            showResults(html);
+        }
+
+        function generateCompatibilityMatrix() {
+            if (friendsData.length < 2) {
+                showResults('<div class="no-data">Need at least 2 friends to generate compatibility matrix.</div>');
+                return;
+            }
+            
+            showLoading();
+            
+            setTimeout(() => {
+                const personalities = friendsData.map(friend => generatePersonalityProfile(friend));
+                const matrix = calculateCompatibilityMatrix(personalities);
+                displayCompatibilityMatrix(matrix);
+            }, 1500);
+        }
+
+        function calculateCompatibilityMatrix(personalities) {
+            const matrix = [];
+            
+            for (let i = 0; i < personalities.length; i++) {
+                for (let j = i + 1; j < personalities.length; j++) {
+                    const person1 = personalities[i];
+                    const person2 = personalities[j];
+                    
+                    const compatibility = calculateCompatibility(person1, person2);
+                    
+                    matrix.push({
+                        person1: person1.name,
+                        person2: person2.name,
+                        score: compatibility.score,
+                        reasons: compatibility.reasons,
+                        prediction: compatibility.prediction
+                    });
+                }
+            }
+            
+            return matrix.sort((a, b) => b.score - a.score);
+        }
+
+        function calculateCompatibility(person1, person2) {
+            let score = 0;
+            const reasons = [];
+            
+            // Interest compatibility
+            const commonInterests = person1.interests.filter(i => 
+                person2.interests.some(j => j.toLowerCase() === i.toLowerCase())
+            );
+            
+            if (commonInterests.length > 0) {
+                score += 0.3;
+                reasons.push(`Share ${commonInterests.length} common interest(s): ${commonInterests.join(', ')}`);
+            }
+            
+            // Trait compatibility
+            const trait1Names = person1.traits.map(t => t.name.toLowerCase());
+            const trait2Names = person2.traits.map(t => t.name.toLowerCase());
+            const commonTraits = trait1Names.filter(t => trait2Names.includes(t));
+            
+            if (commonTraits.length > 0) {
+                score += 0.25;
+                reasons.push(`Compatible personality traits: ${commonTraits.join(', ')}`);
+            }
+            
+            // Social compatibility
+            if (Math.abs(person1.social.score - person2.social.score) < 0.3) {
+                score += 0.2;
+                reasons.push('Similar social energy levels');
+            }
+            
+            // Group connections
+            const sharedGroups = groupsData.filter(g => 
+                g.members.includes(person1.name) && g.members.includes(person2.name)
+            );
+            
+            if (sharedGroups.length > 0) {
+                score += 0.25;
+                reasons.push(`Already connected through: ${sharedGroups.map(g => g.name).join(', ')}`);
+            }
+            
+            // Generate prediction
+            let prediction = '';
+            if (score > 0.8) {
+                prediction = 'Perfect match! These friends likely have an amazing connection and understand each other deeply.';
+            } else if (score > 0.6) {
+                prediction = 'Great compatibility! They probably enjoy spending time together and share meaningful conversations.';
+            } else if (score > 0.4) {
+                prediction = 'Good potential! They might discover new common interests and grow their friendship.';
+            } else {
+                prediction = 'Different but complementary! They could learn a lot from each other and bring balance to their friendship.';
+            }
+            
+            return {
+                score: Math.min(score, 1.0),
+                reasons,
+                prediction
+            };
+        }
+
+        function displayCompatibilityMatrix(matrix) {
+            const html = `
+                <div class="personality-grid">
+                    ${matrix.map(pair => `
+                        <div class="personality-card">
+                            <div class="card-header">
+                                <div class="avatar">💝</div>
+                                <div class="card-title">
+                                    <h3>${pair.person1} & ${pair.person2}</h3>
+                                    <div class="subtitle">Compatibility Score: ${Math.round(pair.score * 100)}%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="personality-section">
+                                <div class="section-title">📊 Compatibility Meter</div>
+                                <div class="section-content">
+                                    <div class="compatibility-meter">
+                                        <div class="compatibility-fill" style="width: ${pair.score * 100}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="personality-section">
+                                <div class="section-title">🔍 Analysis</div>
+                                <div class="section-content">
+                                    ${pair.reasons.map(reason => `<p>• ${reason}</p>`).join('')}
+                                </div>
+                            </div>
+                            
+                            <div class="personality-section">
+                                <div class="section-title">🎯 Prediction</div>
+                                <div class="section-content">
+                                    <p>${pair.prediction}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            showResults(html);
+        }
+
+        function predictFriendGroups() {
+            if (friendsData.length === 0) {
+                showResults('<div class="no-data">No friends data available for group prediction.</div>');
+                return;
+            }
+            
+            showLoading();
+            
+            setTimeout(() => {
+                const personalities = friendsData.map(friend => generatePersonalityProfile(friend));
+                const predictions = generateGroupPredictions(personalities);
+                displayGroupPredictions(predictions);
+            }, 1500);
+        }
+
+        function generateGroupPredictions(personalities) {
+            const predictions = [];
+            
+            // Analyze existing groups
+            groupsData.forEach(group => {
+                const members = personalities.filter(p => group.members.includes(p.name));
+                if (members.length > 0) {
+                    const groupAnalysis = analyzeGroupDynamics(group.name, members);
+                    predictions.push(groupAnalysis);
+                }
+            });
+            
+            // Suggest new groups
+            const suggestedGroups = suggestNewGroups(personalities);
+            predictions.push(...suggestedGroups);
+            
+            return predictions;
+        }
+
+        function analyzeGroupDynamics(groupName, members) {
+            const commonTraits = findCommonTraits(members);
+            const dominantInterests = findDominantInterests(members);
+            const socialDynamics = analyzeSocialDynamics(members);
+            
+            return {
+                type: 'existing',
+                name: groupName,
+                members: members.map(m => m.name),
+                commonTraits,
+                dominantInterests,
+                dynamics: socialDynamics,
+                predictions: generateGroupInsights(members, groupName)
+            };
+        }
+
+        function suggestNewGroups(personalities) {
+            const suggestions = [];
+            
+            // Interest-based groups
+            const interestGroups = {};
+            personalities.forEach(person => {
+                person.interests.forEach(interest => {
+                    if (!interestGroups[interest]) {
+                        interestGroups[interest] = [];
+                    }
+                    interestGroups[interest].push(person);
+                });
+            });
+            
+            Object.entries(interestGroups).forEach(([interest, people]) => {
+                if (people.length >= 2) {
+                    suggestions.push({
+                        type: 'suggested',
+                        name: `${interest.charAt(0).toUpperCase() + interest.slice(1)} Enthusiasts`,
+                        members: people.map(p => p.name),
+                        commonTraits: findCommonTraits(people),
+                        dominantInterests: [{name: interest, count: people.length}],
+                        dynamics: analyzeSocialDynamics(people),
+                        predictions: [`This group would bond over their shared love for ${interest}`, 
+                                    `They could organize ${interest}-related activities together`,
+                                    `Strong potential for deep friendships based on common passion`]
+                    });
+                }
+            });
+            
+            return suggestions;
+        }
+
+        function findCommonTraits(members) {
+            const traitCounts = {};
+            members.forEach(member => {
+                member.traits.forEach(trait => {
+                    traitCounts[trait.name] = (traitCounts[trait.name] || 0) + 1;
+                });
+            });
+            
+            return Object.entries(traitCounts)
+                .filter(([trait, count]) => count >= Math.ceil(members.length / 2))
+                .map(([trait, count]) => ({ name: trait, prevalence: count / members.length }))
+                .sort((a, b) => b.prevalence - a.prevalence);
+        }
+
+        function findDominantInterests(members) {
+            const interestCounts = {};
+            members.forEach(member => {
+                member.interests.forEach(interest => {
+                    interestCounts[interest] = (interestCounts[interest] || 0) + 1;
+                });
+            });
+            
+            return Object.entries(interestCounts)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 3)
+                .map(([interest, count]) => ({ name: interest, count }));
+        }
+
+        function analyzeSocialDynamics(members) {
+            const avgSocialScore = members.reduce((sum, m) => sum + m.social.score, 0) / members.length;
+            
+            let dynamicsType = '';
+            if (avgSocialScore > 0.8) {
+                dynamicsType = 'High Energy Social Group';
+            } else if (avgSocialScore > 0.6) {
+                dynamicsType = 'Balanced Social Group';
+            } else if (avgSocialScore > 0.4) {
+                dynamicsType = 'Intimate Circle';
+            } else {
+                dynamicsType = 'Quiet Companions';
+            }
+            
+            return {
+                type: dynamicsType,
+                avgScore: avgSocialScore,
+                diversity: calculatePersonalityDiversity(members)
+            };
+        }
+
+        function calculatePersonalityDiversity(members) {
+            if (members.length < 2) return 0;
+            
+            let totalDifference = 0;
+            let comparisons = 0;
+            
+            for (let i = 0; i < members.length; i++) {
+                for (let j = i + 1; j < members.length; j++) {
+                    const person1Traits = members[i].traits.map(t => t.name);
+                    const person2Traits = members[j].traits.map(t => t.name);
+                    const commonTraits = person1Traits.filter(t => person2Traits.includes(t));
+                    const difference = 1 - (commonTraits.length / Math.max(person1Traits.length, person2Traits.length));
+                    totalDifference += difference;
+                    comparisons++;
+                }
+            }
+            
+            return totalDifference / comparisons;
+        }
+
+        function generateGroupInsights(members, groupName) {
+            const predictions = [];
+            const dominantTraits = findCommonTraits(members);
+            const interests = findDominantInterests(members);
+            
+            if (dominantTraits.length > 0) {
+                predictions.push(`Group strength lies in their shared ${dominantTraits[0].name.toLowerCase()} nature`);
+            }
+            
+            if (interests.length > 0) {
+                predictions.push(`Likely to engage in ${interests[0].name.toLowerCase()} activities together`);
+            }
+            
+            if (members.length === 2) {
+                predictions.push('Perfect duo with potential for deep, meaningful friendship');
+            } else if (members.length > 3) {
+                predictions.push('Dynamic group with diverse perspectives and rich interactions');
+            }
+            
+            return predictions;
+        }
+
+        function displayGroupPredictions(predictions) {
+            const html = `
+                <div class="personality-grid">
+                    ${predictions.map(group => `
+                        <div class="personality-card">
+                            <div class="card-header">
+                                <div class="avatar">${group.type === 'existing' ? '👥' : '✨'}</div>
+                                <div class="card-title">
+                                    <h3>${group.name}</h3>
+                                    <div class="subtitle">${group.type === 'existing' ? 'Existing Group' : 'Suggested Group'}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="personality-section">
+                                <div class="section-title">👤 Members</div>
+                                <div class="section-content">
+                                    <div class="trait-tags">
+                                        ${group.members.map(member => `<span class="trait-tag">${member}</span>`).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="personality-section">
+                                <div class="section-title">🧬 Group DNA</div>
+                                <div class="section-content">
+                                    <p><strong>Social Dynamic:</strong> ${group.dynamics.type}</p>
+                                    <div class="compatibility-meter">
+                                        <div class="compatibility-fill" style="width: ${group.dynamics.avgScore * 100}%"></div>
+                                    </div>
+                                    <small>Group Energy: ${Math.round(group.dynamics.avgScore * 100)}%</small>
+                                </div>
+                            </div>
+                            
+                            ${group.commonTraits.length > 0 ? `
+                            <div class="personality-section">
+                                <div class="section-title">🎯 Shared Traits</div>
+                                <div class="section-content">
+                                    <div class="trait-tags">
+                                        ${group.commonTraits.map(trait => 
+                                            `<span class="trait-tag">${trait.name} (${Math.round(trait.prevalence * 100)}%)</span>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            <div class="personality-section">
+                                <div class="section-title">🔮 Group Predictions</div>
+                                <div class="section-content">
+                                    ${group.predictions.map(pred => `<p>• ${pred}</p>`).join('')}
+                                </div>
+                            </div>
+                            
+                            ${group.dominantInterests.length > 0 ? `
+                            <div class="personality-section">
+                                <div class="section-title">💡 Common Interests</div>
+                                <div class="section-content">
+                                    ${group.dominantInterests.map(interest => 
+                                        `<p>• ${interest.name} (${interest.count} member${interest.count > 1 ? 's' : ''})</p>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            showResults(html);
+        }
+
+        function showLoading() {
+            const html = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing personalities with advanced AI algorithms...</p>
+                </div>
+            `;
+            showResults(html);
+        }
+
+        function showResults(html) {
+            document.getElementById('results-container').innerHTML = html;
+        }
+
+        // Auto-analyze on page load with sample data
+        setTimeout(() => {
+            analyzePersonalities();
+        }, 1000);
+    </script>
+</body>
+</html>

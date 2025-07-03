@@ -1,0 +1,15 @@
+Group: Close Friends
+Member: Manit
+------------------------
+Group: College Friends
+Member: Manit
+Member: Ashish
+Member: Lakshay J
+------------------------
+Group: Family
+Member: Ashish
+Member: Ajay Kumar
+------------------------
+Group: Work Colleagues
+Member: Sonet
+------------------------

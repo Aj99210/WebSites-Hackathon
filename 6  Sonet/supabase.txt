@@ -1,0 +1,17 @@
+anon:  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11bWVzcmp1ZnNyaHp0YnRoYnNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU3NDEzMTEsImV4cCI6MjA2MTMxNzMxMX0.2YSC1U4011DdDv68p07eJEVDZriBqbFvgQOuG74ewyA
+
+
+url:  https://mumesrjufsrhztbthbsn.supabase.co
+
+
+
+callback URL (OAuth) for google: https://mumesrjufsrhztbthbsn.supabase.co/auth/v1/callback
+
+
+
+
+google client ID:
+432976567477-g6v980nrbb8i7505gp6p8kamuomkn3ie.apps.googleusercontent.com
+
+google client Secret:
+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

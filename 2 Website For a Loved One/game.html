@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="gameStyle.css">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Special Journey</title>
+    
+</head>
+<body>
+    <div id="gameContainer" style="height: 500px; user-select: none;">
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <div id="score">❤️ 0/8</div>
+        <div id="message" style="width: 800px; height: 500px;"></div>
+        <div id="startScreen">
+            <h2 style="color: #ff4d4d; margin-top: 50px;">Our Special Journey</h2>
+            <div class="instructions" style="margin-bottom: 70px;">
+                Help Nishtha collect all 8 pieces while avoiding the obstacles!<br>
+                Use arrow keys or W,A,D to move and jump.<br>
+                A special surprise awaits when you collect them all!
+            </div>
+            <div style="display: flex; gap: 20px;">
+                <button onclick="startGame()" style="top: auto; bottom: 65px;">Start Journey</button>
+                <button onclick="skipToPattern()" style="top: auto; bottom: 65px; background: linear-gradient(45deg, #8e8eff, #6b6bff);">Skip to Surprise</button>
+            </div>
+        </div>
+    </div>
+    <script src="game_Script.js"></script>
+</body>
+</html>

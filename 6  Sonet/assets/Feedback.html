@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonet Feedback</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #e1e1e1;
+            --accent-color: #8c84ff;
+            --accent-light: rgba(140, 132, 255, 0.2);
+            --accent-lighter: rgba(140, 132, 255, 0.08);
+            --secondary-color: #3dcbd7;
+            --card-bg: #1e1e1e;
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --input-bg: #2d2d2d;
+            --success-color: #4CAF50;
+            --error-color: #ff5252;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            user-select: none;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(140, 132, 255, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(61, 203, 215, 0.03) 0%, transparent 20%);
+        }
+
+        .feedback-container {
+            width: 650px;
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            padding: 40px;
+            margin: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .feedback-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .header {
+            text-align: center;
+            position: relative;
+            margin-bottom: 30px;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(45deg, 
+                var(--accent-color) 0%, 
+                var(--secondary-color) 25%, 
+                var(--secondary-color) 50%, 
+                var(--accent-color) 75%, 
+                var(--accent-color) 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            position: relative;
+            display: inline-block;
+            animation: shine 4s linear infinite;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(140, 132, 255, 0.02) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            margin-top: 12px;
+            opacity: 0.8;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #ccc;
+        }
+
+        input, textarea, select, .select-selected {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--input-bg);
+            border: 2px solid rgba(140, 132, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-sizing: border-box;
+            font-family: inherit;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        input:focus, textarea:focus, select:focus, .select-selected:focus, 
+        .select-selected.select-arrow-active {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(140, 132, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .rating-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .rating-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .rating-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .rating-face {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            opacity: 0.5;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .rating-text {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .rating-input {
+            display: none;
+        }
+
+        .rating-input:checked + .rating-item .rating-face {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .rating-input:checked + .rating-item[data-rating="1"] .rating-face {
+            color: #ff5252;
+        }
+
+        .rating-input:checked + .rating-item[data-rating="2"] .rating-face {
+            color: #ff9800;
+        }
+
+        .rating-input:checked + .rating-item[data-rating="3"] .rating-face {
+            color: #ffd600;
+        }
+
+        .rating-input:checked + .rating-item[data-rating="4"] .rating-face {
+            color: #9ccc65;
+        }
+
+        .rating-input:checked + .rating-item[data-rating="5"] .rating-face {
+            color: #4CAF50;
+        }
+
+        .checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            position: relative;
+            user-select: none;
+        }
+
+        .checkbox-input {
+            display: none;
+        }
+
+        .checkbox-label {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: var(--input-bg);
+            border: 2px solid rgba(140, 132, 255, 0.1);
+            border-radius: 30px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-input:checked + .checkbox-label {
+            background-color: var(--accent-lighter);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .gradient-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.05;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .blob-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-color);
+            top: -100px;
+            left: -100px;
+        }
+
+        .blob-2 {
+            width: 250px;
+            height: 250px;
+            background: var(--secondary-color);
+            bottom: -50px;
+            right: -50px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .developer-credit {
+            font-size: 0.85rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .developer-credit:hover {
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+
+        .floating-emoji {
+            position: absolute;
+            pointer-events: none;
+            font-size: 1.5rem;
+            opacity: 0;
+            z-index: 100;
+        }
+
+        @keyframes floating {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(20deg);
+                opacity: 0;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+        }
+
+        .notification.error {
+            background-color: var(--error-color);
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .notification-close {
+            margin-left: 15px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+        }
+        
+        .custom-select {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .select-selected {
+            background-color: var(--input-bg);
+            border: 2px solid rgba(140, 132, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .select-selected::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid #aaa;
+            border-bottom: 2px solid #aaa;
+            transform: rotate(45deg);
+            transition: transform 0.3s;
+            margin-right: 5px;
+        }
+        
+        .select-selected.select-arrow-active::after {
+            transform: rotate(-135deg);
+        }
+        
+        .select-items {
+            position: absolute;
+            background-color: var(--card-bg);
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 99;
+            margin-top: 8px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            max-height: 200px;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) var(--input-bg);
+        }
+        
+        .select-items div {
+            padding: 15px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+        
+        .select-items div:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .select-items div:hover {
+            background-color: rgba(140, 132, 255, 0.1);
+        }
+        
+        /* Custom scrollbar for dropdown */
+        .select-items::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .select-items::-webkit-scrollbar-track {
+            background: var(--input-bg);
+            border-radius: 10px;
+        }
+        
+        .select-items::-webkit-scrollbar-thumb {
+            background: rgba(140, 132, 255, 0.4);
+            border-radius: 10px;
+        }
+        
+        .select-items::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+        
+        .select-show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        .same-as-selected {
+            background-color: rgba(140, 132, 255, 0.2);
+        }
+
+        /* Progress indicator */
+        .progress-container {
+            width: 100%;
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 33.33%;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--input-bg);
+            border: 2px solid rgba(140, 132, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #999;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .step-text {
+            font-size: 0.85rem;
+            color: #999;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 3px;
+            background-color: var(--input-bg);
+            width: 100%;
+            z-index: 1;
+        }
+        
+        .progress-line-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .step-active .step-icon {
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 0 0 4px var(--accent-light);
+        }
+        
+        .step-active .step-text {
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+        
+        .step-complete .step-icon {
+            background: var(--success-color);
+            border-color: transparent;
+            color: white;
+        }
+        
+        .step-complete .step-icon::after {
+            content: '✓';
+            position: absolute;
+        }
+
+        /* Slide effects for multi-step form */
+        .form-step {
+            display: none;
+            animation: fadeSlide 0.5s ease;
+        }
+        
+        .form-step.active {
+            display: block;
+        }
+        
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            position: relative;
+            z-index: 20;
+        }
+        
+        .prev-btn {
+            background-color: transparent;
+            border: 2px solid rgba(140, 132, 255, 0.3);
+            color: var(--text-color);
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .prev-btn:hover {
+            border-color: var(--accent-color);
+            background-color: var(--accent-lighter);
+        }
+        
+        .next-btn {
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+        
+        .next-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+        
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .next-btn:hover::before {
+            left: 100%;
+        }
+        
+        /* Form validation visual indicators */
+        .form-group.error input,
+        .form-group.error textarea,
+        .form-group.error .select-selected {
+            border-color: var(--error-color);
+            box-shadow: 0 0 0 4px rgba(255, 82, 82, 0.1);
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .form-group.error .error-message {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        /* Thank you screen */
+        .thank-you {
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .thank-you-icon {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: 20px;
+        }
+        
+        .thank-you h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .thank-you p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+        
+        /* Motion blur effect on form submission */
+        @keyframes fadeToBlur {
+            0% {
+                filter: blur(0);
+                opacity: 1;
+            }
+            100% {
+                filter: blur(10px);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes blurToFade {
+            0% {
+                filter: blur(10px);
+                opacity: 0;
+            }
+            100% {
+                filter: blur(0);
+                opacity: 1;
+            }
+        }
+        
+        .fade-blur-out {
+            animation: fadeToBlur 0.5s forwards;
+        }
+        
+        .fade-blur-in {
+            animation: blurToFade 0.5s forwards;
+        }
+
+        /* Enhanced animations */
+        .form-step.active {
+            animation: fadeSlideImproved 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        
+        @keyframes fadeSlideImproved {
+            0% {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Improved button effects */
+        .next-btn, .prev-btn, .submit-btn {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .next-btn:active, .prev-btn:active, .submit-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Subtle pulse animation for submit button */
+        @keyframes subtle-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(140, 132, 255, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 8px rgba(140, 132, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(140, 132, 255, 0);
+            }
+        }
+        
+        .submit-btn {
+            animation: subtle-pulse 2s infinite;
+        }
+        
+        /* Enhanced hover effects */
+        .rating-item:hover .rating-face {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .checkbox-input:checked + .checkbox-label {
+            transform: translateY(-2px);
+        }
+        
+        /* Improved step indicators */
+        .step-icon {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .step-active .step-icon {
+            transform: scale(1.1);
+        }
+
+        /* Focus visible styles for accessibility */
+        button:focus-visible, input:focus-visible, textarea:focus-visible,
+        .select-selected:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+        
+        /* Smooth scrolling for the whole page */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Improve placeholder text */
+        ::placeholder {
+            color: rgba(225, 225, 225, 0.4);
+            transition: color 0.3s ease;
+        }
+        
+        input:focus::placeholder, textarea:focus::placeholder {
+            color: rgba(225, 225, 225, 0.6);
+        }
+        
+        /* Enhanced hover effects for buttons */
+        .next-btn:hover, .submit-btn:hover {
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2),
+                        0 0 0 2px rgba(140, 132, 255, 0.1);
+        }
+        
+        /* Shine effect for the logo */
+        @keyframes shine {
+            0% {
+                background-position: -100% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* Loading animation on form submit */
+        @keyframes loading-shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+        
+        .submit-btn.loading {
+            background: linear-gradient(90deg, 
+                rgba(140, 132, 255, 0.8) 0%, 
+                rgba(61, 203, 215, 0.8) 50%, 
+                rgba(140, 132, 255, 0.8) 100%);
+            background-size: 200% auto;
+            animation: loading-shimmer 1.5s infinite linear;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Refined hover effect for custom select */
+        .select-selected:hover {
+            background-color: rgba(45, 45, 45, 0.9);
+            border-color: rgba(140, 132, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="feedback-container">
+        <div class="gradient-blob blob-1"></div>
+        <div class="gradient-blob blob-2"></div>
+        
+        <div class="header">
+            <h1 class="logo">SONET</h1>
+            <p class="tagline">Help us improve your social network management experience</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-line">
+                <div class="progress-line-fill" id="progressLine"></div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-step step-active" data-step="1">
+                    <div class="step-icon">1</div>
+                    <div class="step-text">Basic Info</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-icon">2</div>
+                    <div class="step-text">Experience</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-icon">3</div>
+                    <div class="step-text">Details</div>
+                </div>
+            </div>
+        </div>
+        
+        <form id="feedbackForm">
+            <!-- Step 1: Basic Information -->
+            <div class="form-step active" id="step1">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                    <div class="error-message">Please enter your name</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                    <div class="error-message">Please enter a valid email address</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userType">How do you use Sonet?</label>
+                    <div class="custom-select">
+                        <div class="select-selected">Select your user type</div>
+                        <div class="select-items">
+                            <div data-value="personal">Personal Friend Management</div>
+                            <div data-value="business">Business</div>
+                            <div data-value="education">Education</div>
+                            <div data-value="developer">Developer</div>
+                            <div data-value="other">Other</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="userType" name="userType" required>
+                    <div class="error-message">Please select how you use Sonet</div>
+                </div>
+                
+                <div class="form-navigation">
+                    <div></div> <!-- Spacer for alignment -->
+                    <button type="button" class="next-btn" data-next="2">Next</button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Experience Rating -->
+            <div class="form-step" id="step2">
+                <div class="form-group">
+                    <label>How would you rate your overall experience with Sonet?</label>
+                    <div class="rating-container">
+                        <input type="radio" name="rating" id="rating1" value="1" class="rating-input" required>
+                        <label for="rating1" class="rating-item" data-rating="1">
+                            <div class="rating-face">😞</div>
+                            <div class="rating-text">Very Poor</div>
+                        </label>
+                        
+                        <input type="radio" name="rating" id="rating2" value="2" class="rating-input">
+                        <label for="rating2" class="rating-item" data-rating="2">
+                            <div class="rating-face">😕</div>
+                            <div class="rating-text">Poor</div>
+                        </label>
+                        
+                        <input type="radio" name="rating" id="rating3" value="3" class="rating-input">
+                        <label for="rating3" class="rating-item" data-rating="3">
+                            <div class="rating-face">😐</div>
+                            <div class="rating-text">Average</div>
+                        </label>
+                        
+                        <input type="radio" name="rating" id="rating4" value="4" class="rating-input">
+                        <label for="rating4" class="rating-item" data-rating="4">
+                            <div class="rating-face">😊</div>
+                            <div class="rating-text">Good</div>
+                        </label>
+                        
+                        <input type="radio" name="rating" id="rating5" value="5" class="rating-input">
+                        <label for="rating5" class="rating-item" data-rating="5">
+                            <div class="rating-face">😍</div>
+                            <div class="rating-text">Excellent</div>
+                        </label>
+                    </div>
+                    <div class="error-message">Please select a rating</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Which features do you use most frequently?</label>
+                    <div class="checkboxes">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="feature1" name="features" value="messaging" class="checkbox-input">
+                            <label for="feature1" class="checkbox-label">Messaging Chat Bot</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="feature2" name="features" value="file-sharing" class="checkbox-input">
+                            <label for="feature2" class="checkbox-label">Add Friends</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="feature3" name="features" value="cloud-sync" class="checkbox-input">
+                            <label for="feature3" class="checkbox-label">Dashboard</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="feature4" name="features" value="blockchain" class="checkbox-input">
+                            <label for="feature4" class="checkbox-label">Graphs</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="feature5" name="features" value="reactive-ui" class="checkbox-input">
+                            <label for="feature5" class="checkbox-label">Reactive UI</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="feature6" name="features" value="oauth" class="checkbox-input">
+                            <label for="feature6" class="checkbox-label">Export Data</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-navigation">
+                    <button type="button" class="prev-btn" data-prev="1">Previous</button>
+                    <button type="button" class="next-btn" data-next="3">Next</button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Detailed Feedback -->
+            <div class="form-step" id="step3">
+                <div class="form-group">
+                    <label for="improvements">What improvements would you like to see?</label>
+                    <textarea id="improvements" name="improvements" placeholder="Share your ideas for improvements..." required></textarea>
+                    <div class="error-message">Please provide your feedback</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="additional">Anything else you'd like to share with us?</label>
+                    <textarea id="additional" name="additional" placeholder="Any additional comments, suggestions, or experiences..."></textarea>
+                </div>
+                
+                <div class="form-navigation">
+                    <button type="button" class="prev-btn" data-prev="2">Previous</button>
+                    <button type="submit" class="submit-btn">Submit Feedback</button>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Thank You Screen -->
+        <div class="thank-you" id="thankYou">
+            <div class="thank-you-icon">✨</div>
+            <h2>Thank You!</h2>
+            <p>Your feedback has been successfully submitted and will help us enhance Sonet's friend management features for everyone. We truly appreciate you taking the time to share your social networking insights with us.</p>
+            <button class="next-btn" id="resetForm">Send Another Feedback</button>
+        </div>
+        
+        <div class="footer">
+            © 2025 Sonet • Simplifying social network management for everyone
+            <span class="developer-credit">Developed By Ajay</span>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <span class="notification-icon" id="notificationIcon"></span>
+        <span id="notificationText"></span>
+        <span class="notification-close" id="notificationClose">✕</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Custom dropdown functionality
+            const customSelects = document.querySelectorAll('.custom-select');
+            const hiddenInput = document.getElementById('userType');
+            
+            customSelects.forEach(select => {
+                const selected = select.querySelector('.select-selected');
+                const items = select.querySelector('.select-items');
+                const options = items.querySelectorAll('div');
+                
+                selected.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.classList.toggle('select-arrow-active');
+                    items.classList.toggle('select-show');
+                });
+                
+                options.forEach(option => {
+                    option.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        selected.textContent = this.textContent;
+                        hiddenInput.value = this.getAttribute('data-value');
+                        console.log('User type selected:', hiddenInput.value);
+                        
+                        // Visual feedback
+                        options.forEach(opt => opt.classList.remove('same-as-selected'));
+                        this.classList.add('same-as-selected');
+                        
+                        // Remove error state if present
+                        const userTypeGroup = hiddenInput.closest('.form-group');
+                        userTypeGroup.classList.remove('error');
+                        
+                        // Reset dropdown styling
+                        const selectElement = userTypeGroup.querySelector('.select-selected');
+                        selectElement.style.borderColor = 'rgba(140, 132, 255, 0.1)';
+                        selectElement.style.boxShadow = 'none';
+                        
+                        selected.click(); // Close dropdown
+                    });
+                });
+                
+                // Close dropdown when clicking elsewhere
+                document.addEventListener('click', function() {
+                    items.classList.remove('select-show');
+                    selected.classList.remove('select-arrow-active');
+                });
+            });
+            
+            // Ensure dropdown is scrollable with all options visible
+            customSelects.forEach(select => {
+                const items = select.querySelector('.select-items');
+                
+                // Make sure scrollbar is visible when dropdown is shown
+                select.querySelector('.select-selected').addEventListener('click', function() {
+                    // Small delay to ensure the dropdown is visible
+                    setTimeout(() => {
+                        if (items.classList.contains('select-show')) {
+                            items.style.overflowY = 'auto';
+                            
+                            // Highlight the scrollbar briefly to make it noticeable
+                            items.style.scrollbarColor = 'var(--accent-color) var(--input-bg)';
+                            setTimeout(() => {
+                                items.style.scrollbarColor = '';
+                            }, 1000);
+                        }
+                    }, 10);
+                });
+                
+                // Enable mousewheel scrolling on dropdown
+                items.addEventListener('wheel', function(e) {
+                    const { deltaY } = e;
+                    this.scrollTop += deltaY;
+                    e.preventDefault();
+                });
+            });
+            
+            // Multi-step form navigation
+            const formSteps = document.querySelectorAll('.form-step');
+            const progressSteps = document.querySelectorAll('.progress-step');
+            const progressLine = document.getElementById('progressLine');
+            const nextBtns = document.querySelectorAll('.next-btn');
+            const prevBtns = document.querySelectorAll('.prev-btn');
+            const form = document.getElementById('feedbackForm');
+            const thankYouScreen = document.getElementById('thankYou');
+            
+            // Initialize step indicators
+            let currentStep = 1;
+            updateProgressBar();
+            
+            // Next button handler - improve click handling
+            nextBtns.forEach(btn => {
+                // Add pointer cursor explicitly
+                btn.style.cursor = 'pointer';
+                
+                // Add both click and mousedown event for better responsiveness
+                btn.addEventListener('click', handleNextButtonClick);
+                btn.addEventListener('mousedown', handleNextButtonClick);
+                
+                function handleNextButtonClick(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Next button clicked', this);
+                    
+                    const nextStep = parseInt(this.getAttribute('data-next'));
+                    console.log('Going to step:', nextStep);
+                    
+                    // Validate current step before proceeding
+                    if (validateStep(currentStep)) {
+                        changeStep(nextStep);
+                    } else {
+                        console.log('Validation failed for step', currentStep);
+                    }
+                }
+            });
+            
+            // Previous button handler
+            prevBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const prevStep = parseInt(this.getAttribute('data-prev'));
+                    changeStep(prevStep);
+                });
+            });
+            
+            // Change step function
+            function changeStep(stepNumber) {
+                // Hide all steps
+                formSteps.forEach(step => {
+                    step.classList.remove('active');
+                });
+                
+                // Show target step
+                document.getElementById('step' + stepNumber).classList.add('active');
+                
+                // Update current step
+                currentStep = stepNumber;
+                
+                // Update progress indicators
+                updateProgressBar();
+            }
+            
+            // Update progress bar and step indicators
+            function updateProgressBar() {
+                // Update step status
+                progressSteps.forEach(step => {
+                    const stepNum = parseInt(step.getAttribute('data-step'));
+                    
+                    step.classList.remove('step-active', 'step-complete');
+                    
+                    if (stepNum < currentStep) {
+                        step.classList.add('step-complete');
+                    } else if (stepNum === currentStep) {
+                        step.classList.add('step-active');
+                    }
+                });
+                
+                // Update progress line
+                const progressPercentage = ((currentStep - 1) / (progressSteps.length - 1)) * 100;
+                progressLine.style.width = progressPercentage + '%';
+            }
+            
+            // Form validation by step
+            function validateStep(step) {
+                let isValid = true;
+                console.log('Validating step', step);
+                
+                if (step === 1) {
+                    // Validate name
+                    const nameInput = document.getElementById('name');
+                    const nameGroup = nameInput.closest('.form-group');
+                    
+                    if (!nameInput.value.trim()) {
+                        nameGroup.classList.add('error');
+                        isValid = false;
+                        console.log('Name validation failed');
+                    } else {
+                        nameGroup.classList.remove('error');
+                    }
+                    
+                    // Validate email
+                    const emailInput = document.getElementById('email');
+                    const emailGroup = emailInput.closest('.form-group');
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    
+                    if (!emailPattern.test(emailInput.value.trim())) {
+                        emailGroup.classList.add('error');
+                        isValid = false;
+                        console.log('Email validation failed');
+                    } else {
+                        emailGroup.classList.remove('error');
+                    }
+                    
+                    // Validate user type
+                    const userTypeInput = document.getElementById('userType');
+                    const userTypeGroup = userTypeInput.closest('.form-group');
+                    
+                    if (!userTypeInput.value || !userTypeInput.value.trim()) {
+                        userTypeGroup.classList.add('error');
+                        isValid = false;
+                        console.log('User type validation failed:', userTypeInput.value);
+                        
+                        // Force the dropdown to highlight in red
+                        const selectElement = userTypeGroup.querySelector('.select-selected');
+                        selectElement.style.borderColor = 'var(--error-color)';
+                        selectElement.style.boxShadow = '0 0 0 4px rgba(255, 82, 82, 0.1)';
+                    } else {
+                        userTypeGroup.classList.remove('error');
+                        
+                        // Reset dropdown styling
+                        const selectElement = userTypeGroup.querySelector('.select-selected');
+                        selectElement.style.borderColor = 'rgba(140, 132, 255, 0.1)';
+                        selectElement.style.boxShadow = 'none';
+                    }
+                } 
+                else if (step === 2) {
+                    // Validate rating
+                    const ratingInputs = document.querySelectorAll('input[name="rating"]');
+                    const ratingGroup = ratingInputs[0].closest('.form-group');
+                    let ratingSelected = false;
+                    
+                    ratingInputs.forEach(input => {
+                        if (input.checked) {
+                            ratingSelected = true;
+                        }
+                    });
+                    
+                    if (!ratingSelected) {
+                        ratingGroup.classList.add('error');
+                        isValid = false;
+                    } else {
+                        ratingGroup.classList.remove('error');
+                    }
+                    
+                    // Features are optional, no validation needed
+                }
+                else if (step === 3) {
+                    // Validate improvements
+                    const improvementsInput = document.getElementById('improvements');
+                    const improvementsGroup = improvementsInput.closest('.form-group');
+                    
+                    if (!improvementsInput.value.trim()) {
+                        improvementsGroup.classList.add('error');
+                        isValid = false;
+                    } else {
+                        improvementsGroup.classList.remove('error');
+                    }
+                    
+                    // Additional comments are optional
+                }
+                
+                // Scroll to the first error if validation failed
+                if (!isValid) {
+                    setTimeout(() => {
+                        const firstError = document.querySelector('.form-group.error');
+                        if (firstError) {
+                            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 100);
+                }
+                
+                return isValid;
+            }
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Final validation
+                if (validateStep(currentStep)) {
+                    // Apply transition effect
+                    form.classList.add('fade-blur-out');
+                    
+                    // Simulate form submission
+                    setTimeout(() => {
+                        form.style.display = 'none';
+                        thankYouScreen.style.display = 'block';
+                        thankYouScreen.classList.add('fade-blur-in');
+                        
+                        // Update progress to complete
+                        progressSteps.forEach(step => {
+                            step.classList.remove('step-active');
+                            step.classList.add('step-complete');
+                        });
+                        progressLine.style.width = '100%';
+                        
+                        // Show success notification
+                        showNotification('success', '✓', 'Feedback submitted successfully!');
+                        
+                        // Create floating emoji animation
+                        createFloatingEmojis();
+                    }, 500);
+                }
+            });
+            
+            // Reset form for another submission
+            document.getElementById('resetForm').addEventListener('click', function() {
+                // Reset form fields
+                form.reset();
+                document.querySelector('.select-selected').textContent = 'Select your user type';
+                
+                // Reset step indicators
+                currentStep = 1;
+                updateProgressBar();
+                
+                // Reset form display
+                thankYouScreen.style.display = 'none';
+                form.classList.remove('fade-blur-out');
+                form.style.display = 'block';
+                
+                // Reset form steps
+                formSteps.forEach(step => {
+                    step.classList.remove('active');
+                });
+                document.getElementById('step1').classList.add('active');
+                
+                // Reset validation styling
+                document.querySelectorAll('.form-group').forEach(group => {
+                    group.classList.remove('error');
+                });
+            });
+            
+            // Rating face interaction
+            const ratingItems = document.querySelectorAll('.rating-item');
+            
+            ratingItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const inputId = this.getAttribute('for');
+                    document.getElementById(inputId).checked = true;
+                    
+                    // Visual feedback
+                    document.querySelector('.form-group:has(input[name="rating"])').classList.remove('error');
+                });
+            });
+            
+            // Notification system
+            const notification = document.getElementById('notification');
+            const notificationIcon = document.getElementById('notificationIcon');
+            const notificationText = document.getElementById('notificationText');
+            const notificationClose = document.getElementById('notificationClose');
+            
+            function showNotification(type, icon, message) {
+                notification.className = 'notification ' + type + ' show';
+                notificationIcon.textContent = icon;
+                notificationText.textContent = message;
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    hideNotification();
+                }, 5000);
+            }
+            
+            function hideNotification() {
+                notification.classList.remove('show');
+            }
+            
+            notificationClose.addEventListener('click', hideNotification);
+            
+            // Create floating emoji animation
+            function createFloatingEmojis() {
+                const emojis = ['✨', '🚀', '💫', '🎉', '👍', '🙌'];
+                const container = document.querySelector('.feedback-container');
+                
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        const emoji = document.createElement('div');
+                        emoji.classList.add('floating-emoji');
+                        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                        
+                        // Random position at bottom
+                        const posX = Math.random() * container.offsetWidth;
+                        emoji.style.left = `${posX}px`;
+                        emoji.style.bottom = '100px';
+                        
+                        // Random animation duration and delay
+                        const duration = 2 + Math.random() * 3;
+                        emoji.style.animation = `floating ${duration}s ease-out forwards`;
+                        
+                        container.appendChild(emoji);
+                        
+                        // Clean up after animation
+                        setTimeout(() => {
+                            emoji.remove();
+                        }, duration * 1000);
+                    }, i * 300);
+                }
+            }
+            
+            // Input validation on change
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const group = this.closest('.form-group');
+                    if (this.value.trim() !== '') {
+                        group.classList.remove('error');
+                    }
+                });
+            });
+            
+            // Prevent accidental page refresh/navigation
+            window.addEventListener('beforeunload', function(e) {
+                // Check if form has been started but not completed
+                const formStarted = document.getElementById('name').value.trim() !== '' || 
+                                   document.getElementById('email').value.trim() !== '';
+                const formCompleted = thankYouScreen.style.display === 'block';
+                
+                if (formStarted && !formCompleted) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+            
+            // Add subtle hover effects to inputs
+            const formControls = document.querySelectorAll('input, textarea, .select-selected');
+            formControls.forEach(control => {
+                control.addEventListener('mouseenter', function() {
+                    if (!this.closest('.form-group').classList.contains('error')) {
+                        this.style.borderColor = 'rgba(140, 132, 255, 0.3)';
+                    }
+                });
+                
+                control.addEventListener('mouseleave', function() {
+                    if (!this.closest('.form-group').classList.contains('error') && document.activeElement !== this) {
+                        this.style.borderColor = 'rgba(140, 132, 255, 0.1)';
+                    }
+                });
+            });
+            
+            // End of DOM Content Loaded
+            
+            // For testing - manually enable steps if needed
+            window.testGoToStep = function(step) {
+                console.log('Manual step change to', step);
+                changeStep(step);
+            };
+            
+            // Test the buttons are clickable
+            document.querySelectorAll('.next-btn, .prev-btn').forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    console.log('Button hovered:', this);
+                });
+            });
+
+            // Add smooth scroll to form when validation error occurs
+            function scrollToError() {
+                const firstError = document.querySelector('.form-group.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            
+            // Add hover effect to developer credit
+            const developerCredit = document.querySelector('.developer-credit');
+            if (developerCredit) {
+                developerCredit.addEventListener('mouseenter', function() {
+                    this.style.letterSpacing = '1px';
+                });
+                
+                developerCredit.addEventListener('mouseleave', function() {
+                    this.style.letterSpacing = '0.5px';
+                });
+            }
+
+            // Add focus trap to custom select
+            const selectElements = document.querySelectorAll('.select-selected');
+            selectElements.forEach(select => {
+                select.setAttribute('tabindex', '0');
+                select.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+            
+            // Improve accessibility for rating items
+            const ratingLabels = document.querySelectorAll('.rating-item');
+            ratingLabels.forEach(label => {
+                label.setAttribute('tabindex', '0');
+                label.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        const inputId = this.getAttribute('for');
+                        document.getElementById(inputId).checked = true;
+                    }
+                });
+            });
+
+            // Add submit button loading effect
+            form.addEventListener('submit', function() {
+                const submitBtn = document.querySelector('.submit-btn');
+                submitBtn.classList.add('loading');
+                submitBtn.textContent = "Submitting...";
+                submitBtn.disabled = true;
+            });
+        });
+    </script>
+</body>
+</html>

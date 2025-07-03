@@ -1,0 +1,35 @@
+Name: Ajay Kumar
+Phone: 9817256938
+Email: ajay1234@gmail.com
+Birthday: 2006-07-04
+Notes: Hey
+Interests: Coding, Gaming, Sleeping
+------------------------
+Name: Mayank Rana
+Phone: 9306232068
+Email: manit@gmail.com
+Birthday: 2005-04-01
+Notes: Sleeping
+Interests: Watching Movies
+------------------------
+Name: Ashish
+Phone: 8708655855
+Email: ashish99201@gmail.com
+Birthday: 2009-07-14
+Notes: My Brotherrrr
+Interests: Reels
+------------------------
+Name: Sonet
+Phone: 9817256938
+Email: sonet@gmail.com
+Birthday: Hahah
+Notes: Idk 
+Interests: Helping
+------------------------
+Name: Lakshay J
+Phone: 9817256938
+Email: lak@gmail.com
+Birthday: 2025-11-11
+Notes: heh
+Interests: he
+------------------------

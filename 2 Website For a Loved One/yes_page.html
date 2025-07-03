@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From My Heart to Yours ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="yes_style.css">
+    <style>
+        /* New styles for buttons and modal */
+        .special-button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .special-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .special-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+        }
+
+        .special-button:hover::after {
+            animation: buttonShine 1s forwards;
+        }
+
+        @keyframes buttonShine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.7);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #ff6b6b;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        /* New animation classes */
+        .slide-in-left {
+            animation: slideInLeft 1s ease forwards;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 1s ease forwards;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="memory-wall">
+        <div class="shooting-stars"></div>
+        <div class="letter-container" id="letterContainer">
+            <div class="letter" id="letter">
+                <div class="sparkles"></div>
+                <div class="corner-hearts">
+                    <span>❤️</span>
+                    <span>❤️</span>
+                    <span>❤️</span>
+                    <span>❤️</span>
+                </div>
+                <h1 class="letter-title magic-text slide-in-left">My Dearest Nishuta...</h1>
+                <div class="letter-content">
+                    <p class="highlight-text typing-effect" data-text="I know saying 'sorry' might seem small...">I know saying "sorry" might seem small...</p>
+                    <p class="fade-in hover-ripple">But my heart aches every time I think about how I hurt you.</p>
+                    <div class="slide-in-right">
+                        <p class="love-text glow-effect interactive-text">You're the most precious person in my life, and I was foolish.</p>
+                    </div>
+                    <p class="fade-in">I promise to:</p>
+                    <ul class="promises">
+                        <li class="promise-item">Never trust those Dalle again</li>
+                        <li class="promise-item">Always be honest with you</li>
+                        <li class="promise-item">Love you more with each passing day</li>
+                        <li class="promise-item">Make you smile every chance I get</li>
+                        <li class="promise-item">Be the person you deserve</li>
+                    </ul>
+                    <p class="highlight-text shine-effect magic-text">Because you're worth everything to me ❤️</p>
+                    <div class="signature">
+                        <p class="fade-in">Forever Yours,</p>
+                        <p class="fade-in-delay magic-text">Your Silly One</p>
+                    </div>
+                    <div class="button-container">
+                        <button class="special-button slide-in-left" id="whyButton">Why am I doing it?</button>
+                        <button class="special-button slide-in-right" id="gameButton" onclick="window.location.href = 'game.html'">I made a game for you</button>
+                    </div>
+                </div>
+                <div class="butterfly-container"></div>
+            </div>
+        </div>
+        <div class="floating-hearts"></div>
+        <div class="sparkle-container"></div>
+    </div>
+    <div class="side-decorations left"></div>
+    <div class="side-decorations right"></div>
+
+    <!-- Modal for "Why am I doing it?" -->
+    <!-- Modal for "Why am I doing it?" -->
+<div class="modal" id="whyModal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2 style="color: #ff6b6b; font-family: 'Dancing Script', cursive; font-size: 2.2em; margin-bottom: 20px; text-align: center;" class="modal-title">Why This Matters...</h2>
+        <div class="modal-text-container">
+            <p style="font-family: 'Poppins', sans-serif; line-height: 1.8; margin-bottom: 20px;">
+                Because you deserve more than just words. Every smile of yours lights up my world, and knowing I caused you pain breaks my heart. This is my way of showing you that you mean everything to me, and I'm committed to making things right. ❤️
+            </p>
+            <p style="font-family: 'Poppins', sans-serif; line-height: 1.8;">
+                When I started hating myself for my good heart, I forgot that it was part of who I was. So if I lost that, I would have lost myself forever and even you. So I had no choice but to revert back. However this time, I shall not repeat those old mistakes! Heheheh 😊
+            </p>
+        </div>
+    </div>
+</div>
+
+    <script>
+        // Original script content here (unchanged)
+        document.addEventListener('DOMContentLoaded', () => {
+            // ... (keep all the existing JavaScript)
+            const letter = document.getElementById('letter');
+    const letterContainer = document.getElementById('letterContainer');
+    
+    // Parallax effect for letter
+    document.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX / window.innerWidth - 0.5;
+        const mouseY = e.clientY / window.innerHeight - 0.5;
+        
+        letter.style.transform = `
+            perspective(1000px)
+            rotateY(${mouseX * 5}deg)
+            rotateX(${-mouseY * 5}deg)
+            translateZ(10px)
+        `;
+    });
+
+    // Create floating hearts with variety
+    const createHeart = () => {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        const heartTypes = ['❤️', '💖', '💝', '💕', '💗', '💓'];
+        heart.innerHTML = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+        heart.style.fontSize = (Math.random() * 0.5 + 1) + 'rem';
+        document.querySelector('.floating-hearts').appendChild(heart);
+        
+        setTimeout(() => heart.remove(), 5000);
+    };
+
+    // Create sparkles
+    const createSparkle = () => {
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+        sparkle.style.left = Math.random() * 100 + 'vw';
+        sparkle.style.top = Math.random() * 100 + 'vh';
+        sparkle.style.animationDuration = Math.random() * 2 + 1 + 's';
+        document.querySelector('.sparkle-container').appendChild(sparkle);
+        
+        setTimeout(() => sparkle.remove(), 3000);
+    };
+
+    // Create shooting stars
+    const createShootingStar = () => {
+        const star = document.createElement('div');
+        star.classList.add('shooting-star');
+        star.style.top = Math.random() * 50 + 'vh';
+        star.style.left = '0';
+        document.querySelector('.shooting-stars').appendChild(star);
+        
+        setTimeout(() => star.remove(), 1000);
+    };
+
+    // Create butterflies
+    const createButterfly = () => {
+        const butterfly = document.createElement('div');
+        butterfly.classList.add('butterfly');
+        butterfly.innerHTML = '🦋';
+        butterfly.style.left = Math.random() * 100 + '%';
+        butterfly.style.top = Math.random() * 100 + '%';
+        document.querySelector('.butterfly-container').appendChild(butterfly);
+        
+        setTimeout(() => butterfly.remove(), 10000);
+    };
+
+    // Interactive text effect
+    document.querySelectorAll('.interactive-text').forEach(text => {
+        text.addEventListener('mouseover', () => {
+            text.style.transform = 'scale(1.05)';
+            createSparklesAround(text);
+        });
+        
+        text.addEventListener('mouseout', () => {
+            text.style.transform = 'scale(1)';
+        });
+    });
+
+    // Create sparkles around element
+    function createSparklesAround(element) {
+        const rect = element.getBoundingClientRect();
+        for (let i = 0; i < 5; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle', 'sparkle-pop');
+            sparkle.style.left = rect.left + Math.random() * rect.width + 'px';
+            sparkle.style.top = rect.top + Math.random() * rect.height + 'px';
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 1000);
+        }
+    }
+
+    // Promise items hover effect
+    document.querySelectorAll('.promise-item').forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            item.classList.add('promise-hover');
+            createSparklesAround(item);
+        });
+        
+        item.addEventListener('mouseleave', () => {
+            item.classList.remove('promise-hover');
+        });
+    });
+
+    // Magic text effect
+    document.querySelectorAll('.magic-text').forEach(text => {
+        text.addEventListener('mouseover', () => {
+            text.classList.add('magic-hover');
+        });
+        
+        text.addEventListener('mouseout', () => {
+            text.classList.remove('magic-hover');
+        });
+    });
+
+    // Start animations
+    setInterval(createHeart, 300);
+    setInterval(createSparkle, 200);
+    setInterval(createShootingStar, 2000);
+    setInterval(createButterfly, 3000);
+
+    // Add ripple effect to hover-ripple elements
+    document.querySelectorAll('.hover-ripple').forEach(element => {
+        element.addEventListener('mouseover', (e) => {
+            const ripple = document.createElement('div');
+            ripple.classList.add('ripple');
+            element.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 1000);
+        });
+    });
+
+            // New Modal Functionality
+            const whyButton = document.getElementById('whyButton');
+            const whyModal = document.getElementById('whyModal');
+            const closeModal = document.querySelector('.close-modal');
+            const gameButton = document.getElementById('gameButton');
+
+            whyButton.addEventListener('click', () => {
+                whyModal.style.display = 'block';
+                setTimeout(() => {
+                    whyModal.classList.add('active');
+                }, 10);
+            });
+
+            closeModal.addEventListener('click', () => {
+                whyModal.classList.remove('active');
+                setTimeout(() => {
+                    whyModal.style.display = 'none';
+                }, 300);
+            });
+
+            gameButton.addEventListener('click', () => {
+                window.location.href = 'game.html';
+            });
+
+            window.addEventListener('click', (e) => {
+                if (e.target === whyModal) {
+                    whyModal.classList.remove('active');
+                    setTimeout(() => {
+                        whyModal.style.display = 'none';
+                    }, 300);
+                }
+            });
+
+            // Keep all the existing event listeners and animations
+            // ... (rest of the original JavaScript)
+        });
+    </script>
+</body>
+</html>

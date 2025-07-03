@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonet Analytics - Friends Manager Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            user-select: none;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+            animation: fadeInDown 1s ease-out;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 4s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            font-weight: 800;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            background: linear-gradient(120deg, #ffffff 20%, #e0f3ff 40%, #ffffff 60%, #b5e6ff 80%, #ffffff 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textShimmer 4s linear infinite;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .developer-credit {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 40px;
+            font-style: italic;
+            font-weight: 300;
+            animation: fadeIn 1.5s ease-out 0.5s both;
+            position: relative;
+        }
+        
+        .developer-credit::after {
+            content: '✨';
+            margin-left: 8px;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.1; }
+        }
+        
+        @keyframes textShimmer {
+            to { background-position: 200% center; }
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+            animation: slideInUp 0.8s ease-out 0.3s both;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 24px;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        }
+        
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .stat-card:hover::after {
+            left: 100%;
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            animation: numberGlow 3s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .stat-number::after {
+            content: attr(data-number);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: blur(1px);
+            z-index: -1;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.95);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes numberGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 35px;
+            margin-bottom: 50px;
+            animation: slideInUp 0.8s ease-out 0.6s both;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.18);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        }
+        
+        .chart-container::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+        
+        .chart-container:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .chart-container:hover::after {
+            opacity: 1;
+        }
+
+        .chart-title {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.98);
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            letter-spacing: 0.5px;
+        }
+        
+        .chart-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .chart-canvas {
+            position: relative;
+            height: 320px;
+            animation: chartFadeIn 1s ease-out 1s both;
+        }
+        
+        @keyframes chartFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .insights-section {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(35px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.8s ease-out 0.9s both;
+        }
+
+        .insights-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 100%;
+            animation: gradientFlow 4s ease-in-out infinite;
+        }
+        
+        .insights-section::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: insightPulse 6s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .insights-title {
+            font-size: 2em;
+            margin-bottom: 35px;
+            color: rgba(255, 255, 255, 0.98);
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .insight-item {
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.85) 0%, rgba(245, 87, 108, 0.85) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .insight-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+        }
+        
+        .insight-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .insight-item:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.95) 0%, rgba(245, 87, 108, 0.95) 100%);
+        }
+        
+        .insight-item:hover::after {
+            left: 100%;
+        }
+
+        .insight-item h3 {
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes insightPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.1; }
+        }
+
+        .file-selector {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(35px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.8s ease-out 0.3s both;
+        }
+        
+        .file-selector::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 100%;
+            animation: gradientFlow 4s ease-in-out infinite;
+        }
+        
+        .file-selector::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: selectorPulse 8s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .file-upload-container h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.98);
+            font-size: 2em;
+            font-weight: 700;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .file-upload-container p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .file-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .file-input-group {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(25px);
+            border: 2px dashed rgba(255, 255, 255, 0.35);
+            border-radius: 24px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .file-input-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .file-input-group:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .file-input-group:hover::before {
+            left: 100%;
+        }
+
+        .file-input-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+        }
+
+        .file-input-group input[type="file"] {
+            width: 100%;
+            padding: 15px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1em;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(15px);
+            cursor: pointer;
+        }
+
+        .file-input-group input[type="file"]:hover {
+            border-color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+            transform: scale(1.02);
+        }
+
+        .file-status {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 18px;
+            font-size: 1.2em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.35);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .generate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 18px 50px rgba(102, 126, 234, 0.5);
+        }
+        
+        .generate-btn:hover::before {
+            left: 100%;
+        }
+
+        .generate-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .generate-btn:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.5;
+        }
+        
+        @keyframes selectorPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.1; }
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            margin: 50px 0;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #d63031;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Enhanced Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 30px 20px;
+                margin-bottom: 30px;
+            }
+
+            .header h1 {
+                font-size: 2.2em;
+                margin-bottom: 8px;
+            }
+
+            .header p {
+                font-size: 1em;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+
+            .stat-card {
+                padding: 25px;
+                min-height: 120px;
+            }
+
+            .stat-number {
+                font-size: 2.2em;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+                margin-bottom: 30px;
+            }
+
+            .chart-container {
+                min-width: auto;
+                padding: 25px;
+                min-height: 350px;
+            }
+
+            .chart-title {
+                font-size: 1.3em;
+                margin-bottom: 20px;
+            }
+
+            .chart-container canvas {
+                height: 280px !important;
+            }
+
+            .file-selector,
+            .insights-section {
+                padding: 25px;
+                margin-bottom: 25px;
+            }
+
+            .file-selector h2,
+            .insights-title {
+                font-size: 1.6em;
+                margin-bottom: 25px;
+            }
+
+            .file-inputs,
+            .insights-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .file-input-group {
+                padding: 25px;
+            }
+
+            .file-input-group label {
+                font-size: 1.1em;
+                margin-bottom: 15px;
+            }
+
+            .generate-btn {
+                padding: 15px 35px;
+                font-size: 1.1em;
+            }
+
+            .insight-item {
+                padding: 20px;
+            }
+
+            .insight-item h3 {
+                font-size: 1.2em;
+                margin-bottom: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .stat-card {
+                padding: 20px;
+                min-height: 100px;
+            }
+
+            .stat-number {
+                font-size: 1.8em;
+            }
+
+            .chart-container {
+                padding: 20px;
+                min-height: 300px;
+            }
+
+            .chart-container canvas {
+                height: 220px !important;
+            }
+
+            .file-selector,
+            .insights-section {
+                padding: 20px;
+                border-radius: 20px;
+            }
+
+            .file-input-group {
+                padding: 20px;
+            }
+
+            .generate-btn {
+                padding: 12px 30px;
+                font-size: 1em;
+                letter-spacing: 0.3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sonet Analytics</h1>
+            <p>Advanced Friends Manager Dashboard</p>
+        </div>
+        
+        <div class="developer-credit">
+            <p>Developed by Ajay</p>
+        </div>
+
+        <div id="fileSelector" class="file-selector">
+            <div class="file-upload-container">
+                <h2>📁 Select Your Data Files</h2>
+                <p>Choose your Friends.txt and Groups.txt files to generate analytics</p>
+                
+                <div class="file-inputs">
+                    <div class="file-input-group">
+                        <label for="friendsFile">👥 Friends.txt</label>
+                        <input type="file" id="friendsFile" accept=".txt" />
+                        <span class="file-status" id="friendsStatus">No file selected</span>
+                    </div>
+                    
+                    <div class="file-input-group">
+                        <label for="groupsFile">🏷️ Groups.txt</label>
+                        <input type="file" id="groupsFile" accept=".txt" />
+                        <span class="file-status" id="groupsStatus">No file selected</span>
+                    </div>
+                </div>
+                
+                <button id="generateAnalytics" class="generate-btn" disabled>
+                    🚀 Generate Analytics
+                </button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <p>🔄 Generating your analytics...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            <p>❌ Error processing data. Please check your file formats.</p>
+        </div>
+
+        <div id="dashboard" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalFriends">0</div>
+                    <div class="stat-label">Total Friends</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalGroups">0</div>
+                    <div class="stat-label">Total Groups</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgAge">0</div>
+                    <div class="stat-label">Average Age</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="upcomingBirthdays">0</div>
+                    <div class="stat-label">Upcoming Birthdays</div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">🗓️ Age Distribution</div>
+                    <div class="chart-canvas">
+                        <canvas id="ageChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">🎂 Birthday Months</div>
+                    <div class="chart-canvas">
+                        <canvas id="birthdayChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">👥 Group Sizes</div>
+                    <div class="chart-canvas">
+                        <canvas id="groupChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">🎯 Top Interests</div>
+                    <div class="chart-canvas">
+                        <canvas id="interestsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insights-section">
+                <div class="insights-title">💡 Smart Insights</div>
+                <div class="insights-grid" id="insightsContainer">
+                    <!-- Dynamic insights will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let friendsData = [];
+        let groupsData = [];
+        let friendsFileContent = '';
+        let groupsFileContent = '';
+
+        // File handling
+        document.getElementById('friendsFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    friendsFileContent = e.target.result;
+                    document.getElementById('friendsStatus').textContent = `✅ ${file.name} loaded`;
+                    checkFilesReady();
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        document.getElementById('groupsFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    groupsFileContent = e.target.result;
+                    document.getElementById('groupsStatus').textContent = `✅ ${file.name} loaded`;
+                    checkFilesReady();
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function checkFilesReady() {
+            const generateBtn = document.getElementById('generateAnalytics');
+            if (friendsFileContent && groupsFileContent) {
+                generateBtn.disabled = false;
+                generateBtn.style.opacity = '1';
+            }
+        }
+
+        document.getElementById('generateAnalytics').addEventListener('click', function() {
+            try {
+                document.getElementById('fileSelector').style.display = 'none';
+                document.getElementById('loading').style.display = 'block';
+                
+                // Parse the data
+                friendsData = parseFriends(friendsFileContent);
+                groupsData = parseGroups(groupsFileContent);
+                
+                console.log('Parsed friends:', friendsData);
+                console.log('Parsed groups:', groupsData);
+                
+                // Check if we have valid data
+                if (friendsData.length === 0) {
+                    throw new Error('No friends data found');
+                }
+                
+                // Initialize dashboard
+                setTimeout(() => {
+                    initializeDashboard();
+                }, 1000);
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').innerHTML = `<p>❌ Error: ${error.message}</p>`;
+                console.error('Error processing data:', error);
+            }
+        });
+
+        function initializeDashboard() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            
+            updateStats();
+            createCharts();
+            generateInsights();
+        }
+
+        function updateStats() {
+            // Total friends
+            document.getElementById('totalFriends').textContent = friendsData.length;
+            
+            // Total groups
+            document.getElementById('totalGroups').textContent = groupsData.length;
+            
+            // Average age - handle case where all birthdays are "idk"
+            const ages = friendsData.map(f => calculateAge(f.birthday)).filter(age => age !== null);
+            const avgAge = ages.length > 0 ? Math.round(ages.reduce((a, b) => a + b, 0) / ages.length) : 'N/A';
+            document.getElementById('avgAge').textContent = avgAge;
+            
+            // Upcoming birthdays (next 30 days) - handle case where all birthdays are "idk"
+            const upcoming = friendsData.filter(f => {
+                if (!f.birthday || f.birthday === 'idk') return false;
+                const birth = new Date(f.birthday);
+                const today = new Date();
+                const nextBirthday = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+                if (nextBirthday < today) {
+                    nextBirthday.setFullYear(today.getFullYear() + 1);
+                }
+                const daysUntil = (nextBirthday - today) / (1000 * 60 * 60 * 24);
+                return daysUntil <= 30;
+            }).length;
+            document.getElementById('upcomingBirthdays').textContent = upcoming;
+        }
+
+        function createCharts() {
+            createAgeChart();
+            createBirthdayChart();
+            createGroupChart();
+            createInterestsChart();
+        }
+
+        function createAgeChart() {
+            const ages = friendsData.map(f => calculateAge(f.birthday)).filter(age => age !== null);
+            
+            if (ages.length === 0) {
+                // Show "No Data" chart
+                const ctx = document.getElementById('ageChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['No Age Data Available'],
+                        datasets: [{
+                            data: [1],
+                            backgroundColor: ['rgba(255, 255, 255, 0.3)'],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: 'rgba(255, 255, 255, 0.8)'
+                                }
+                            }
+                        }
+                    }
+                });
+                return;
+            }
+
+            const ageRanges = {
+                '13-17': ages.filter(age => age >= 13 && age <= 17).length,
+                '18-25': ages.filter(age => age >= 18 && age <= 25).length,
+                '26-35': ages.filter(age => age >= 26 && age <= 35).length,
+                '36+': ages.filter(age => age >= 36).length
+            };
+
+            const ctx = document.getElementById('ageChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(ageRanges),
+                    datasets: [{
+                        data: Object.values(ageRanges),
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createBirthdayChart() {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const birthdayMonths = new Array(12).fill(0);
+            
+            friendsData.forEach(f => {
+                if (f.birthday && f.birthday !== 'idk') {
+                    const month = new Date(f.birthday).getMonth();
+                    birthdayMonths[month]++;
+                }
+            });
+
+            const ctx = document.getElementById('birthdayChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Birthdays',
+                        data: birthdayMonths,
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function createGroupChart() {
+            const groupSizes = groupsData.map(g => ({
+                name: g.name,
+                size: g.members.length
+            })).filter(g => g.size > 0);
+
+            const ctx = document.getElementById('groupChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: groupSizes.map(g => g.name),
+                    datasets: [{
+                        data: groupSizes.map(g => g.size),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 205, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                backdropColor: 'transparent'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createInterestsChart() {
+            const interestCount = {};
+            
+            console.log('Creating interests chart with friends data:', friendsData);
+            
+            friendsData.forEach(f => {
+                console.log('Processing friend:', f.name, 'Interests:', f.interests);
+                if (f.interests && f.interests !== 'idk' && f.interests.trim() !== '') {
+                    const interests = f.interests.split(',').map(i => i.trim()).filter(i => i.length > 0);
+                    console.log('Split interests:', interests);
+                    interests.forEach(interest => {
+                        if (interest && interest.trim() !== '') {
+                            interestCount[interest] = (interestCount[interest] || 0) + 1;
+                        }
+                    });
+                }
+            });
+
+            console.log('Interest count:', interestCount);
+
+            const sortedInterests = Object.entries(interestCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            console.log('Sorted interests:', sortedInterests);
+
+            const ctx = document.getElementById('interestsChart').getContext('2d');
+            
+            if (sortedInterests.length === 0) {
+                // Show "No Data" chart
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['No Interest Data Available'],
+                        datasets: [{
+                            label: 'No data',
+                            data: [1],
+                            backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                            borderColor: 'rgba(255, 255, 255, 0.5)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    color: 'rgba(255, 255, 255, 0.8)'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.8)'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+                return;
+            }
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedInterests.map(i => i[0]),
+                    datasets: [{
+                        label: 'Friends with this interest',
+                        data: sortedInterests.map(i => i[1]),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 205, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)',
+                            'rgba(255, 159, 64, 0.8)',
+                            'rgba(199, 199, 199, 0.8)',
+                            'rgba(83, 102, 255, 0.8)',
+                            'rgba(255, 99, 255, 0.8)',
+                            'rgba(99, 255, 132, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 205, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(199, 199, 199, 1)',
+                            'rgba(83, 102, 255, 1)',
+                            'rgba(255, 99, 255, 1)',
+                            'rgba(99, 255, 132, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: 'white',
+                            bodyColor: 'white',
+                            borderColor: 'rgba(255, 255, 255, 0.3)',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateInsights() {
+            const insights = [];
+            
+            // Most popular interest
+            const interestCount = {};
+            friendsData.forEach(f => {
+                if (f.interests && f.interests !== 'idk') {
+                    const interests = f.interests.split(',').map(i => i.trim());
+                    interests.forEach(interest => {
+                        interestCount[interest] = (interestCount[interest] || 0) + 1;
+                    });
+                }
+            });
+            
+            const topInterest = Object.entries(interestCount).sort((a, b) => b[1] - a[1])[0];
+            if (topInterest) {
+                insights.push({
+                    title: '🎯 Most Popular Interest',
+                    text: `${topInterest[0]} (${topInterest[1]} friends)`
+                });
+            }
+
+            // Largest group
+            const largestGroup = groupsData.reduce((max, group) => 
+                group.members.length > max.members.length ? group : max, 
+                { members: [] }
+            );
+            if (largestGroup.name) {
+                insights.push({
+                    title: '👥 Largest Group',
+                    text: `${largestGroup.name} (${largestGroup.members.length} members)`
+                });
+            }
+
+            // Next birthday
+            const upcomingBirthdays = friendsData
+                .filter(f => f.birthday && f.birthday !== 'idk')
+                .map(f => {
+                    const birth = new Date(f.birthday);
+                    const today = new Date();
+                    const nextBirthday = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+                    if (nextBirthday < today) {
+                        nextBirthday.setFullYear(today.getFullYear() + 1);
+                    }
+                    return { name: f.name, date: nextBirthday, daysUntil: Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24)) };
+                })
+                .sort((a, b) => a.daysUntil - b.daysUntil)[0];
+
+            if (upcomingBirthdays) {
+                insights.push({
+                    title: '🎂 Next Birthday',
+                    text: `${upcomingBirthdays.name} in ${upcomingBirthdays.daysUntil} days`
+                });
+            }
+
+            // Contact completion
+            const completeContacts = friendsData.filter(f => 
+                f.phone && f.phone !== 'idk' && f.phone !== 'none' &&
+                f.email && f.email !== 'idk'
+            ).length;
+            
+            insights.push({
+                title: '📱 Contact Completion',
+                text: `${Math.round((completeContacts / friendsData.length) * 100)}% have complete contact info`
+            });
+
+            // Render insights
+            const container = document.getElementById('insightsContainer');
+            container.innerHTML = insights.map(insight => `
+                <div class="insight-item">
+                    <h3>${insight.title}</h3>
+                    <p>${insight.text}</p>
+                </div>
+            `).join('');
+        }
+
+        function parseFriends(text) {
+            const friends = [];
+            const entries = text.split('------------------------').filter(entry => entry.trim());
+            
+            entries.forEach(entry => {
+                const lines = entry.trim().split('\n').filter(line => line.trim());
+                const friend = {};
+                
+                lines.forEach(line => {
+                    if (line.includes(':')) {
+                        const colonIndex = line.indexOf(':');
+                        const key = line.substring(0, colonIndex).trim();
+                        const value = line.substring(colonIndex + 1).trim();
+                        
+                        if (key && value) {
+                            friend[key.toLowerCase()] = value;
+                        }
+                    }
+                });
+                
+                if (friend.name && friend.name !== 'idk') {
+                    friends.push(friend);
+                }
+            });
+            
+            console.log('Parsed friends:', friends);
+            return friends;
+        }
+
+        function parseGroups(text) {
+            const groups = [];
+            const entries = text.split('------------------------').filter(entry => entry.trim());
+            
+            entries.forEach(entry => {
+                const lines = entry.trim().split('\n').filter(line => line.trim());
+                const group = { name: '', members: [] };
+                
+                lines.forEach(line => {
+                    if (line.includes(':')) {
+                        const colonIndex = line.indexOf(':');
+                        const key = line.substring(0, colonIndex).trim();
+                        const value = line.substring(colonIndex + 1).trim();
+                        
+                        if (key === 'Group' && value && value !== 'idk') {
+                            group.name = value;
+                        } else if (key === 'Member' && value && value !== 'idk') {
+                            group.members.push(value);
+                        }
+                    }
+                });
+                
+                if (group.name) {
+                    groups.push(group);
+                }
+            });
+            
+            console.log('Parsed groups:', groups);
+            return groups;
+        }
+
+        function calculateAge(birthday) {
+            if (!birthday || birthday === 'idk' || birthday === 'Hahah') return null;
+            
+            // Check if the birthday is a valid date
+            const birth = new Date(birthday);
+            if (isNaN(birth.getTime())) return null;
+            
+            const today = new Date();
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            return age;
+        }
+    </script>
+</body>
+</html>

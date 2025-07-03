@@ -1,0 +1,44 @@
+I wanna build A website With Gemeni Api (Api it will read from api.env) that when user enters any food name, it shows its recipi and how to make that.... I named It Fester... I will have 2 main pages: Landing page and Crafting Page... I alsoo wanna use Spline Models and make it sooo visually appealing... This time im thinking of impliminting white-creamish theme.... Lets First Design its Landing Page... My name is Ajay.. With All Proper NavBar with Two Options: Fester (Landing Page) and Craft Recipies Option.. Everything should loook AAA and professional and high quality
+
+
+
+The UI looks soo Plain Simple It needs to be RE-Written And ReHauled.. Make it soooo sooo complex and intreactable... Add 3d Elements also if possible
+
+
+Bro Im making a website that utilizes the gemini api and when user enters any food name it generates it recepies in beautifull way.... But this script is incomplete... So Complete the script from where you left off and dont re-write the whole script from starting due to your length limits for god sake...
+
+Analyse the whole code and Start Writing from:
+ <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Fester</h3>
+                <p>Revolutionizing the way you cook with AI-powere
+
+
+
+Bro Can You remove About option from the navigation ?
+
+
+
+
+Okay Whenever someone clicks Craft Recipes or Start Crafting, it should redirect to new Craft.html page instead of that same page dialogue...
+Also Remove everything related to that "Demo Api"
+Make sure everything works
+
+
+Bro These are the ScreenShots of the Landing Page of My website Fester.... Its a website where user just enters the namee and it utilizes Gemini API (From api.env) and tells perfect recipi... Now its time to make the crafting page... And make sure that that UI of that page is excately same and make sure it reads api from api.env and works properly.. It should look AAA and professional and nice
+
+
+
+Bro I sshifted the styles to Craft_Style.css however everything is tooo basic now.. And neeeds to be improved and complex and should loook like AAA company
+
+
+Broo the navbar of this pagee loooks ugly as hell and doesnt even resembles the original once... I also Uploaded the screenshot of landing page... But this crafting page narbar should just have fester Written beautiffuly at the center and at most right a Home Icon which when clicked on goes to Landing.html.... Also your length limit is way tooooo low (just 1k line max) so you cant re-write wholeee codee... Just tell me the changes
+
+
+Bro the API key is correct but its still not workingg pleasee fix that.. Also Craft_style.css is a different File soo you dont need to re-write that in <style> of Craft.html file.. Just fix the issue
+
+
+
+

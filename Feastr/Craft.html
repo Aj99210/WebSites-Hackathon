@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fester - Craft Perfect Recipes</title>
+    <link rel="stylesheet" href="Craft_Style.css">
+</head>
+<body>
+    <!-- Floating Background Elements -->
+    <div class="floating-element element-1"></div>
+    <div class="floating-element element-2"></div>
+    <div class="floating-element element-3"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">Fester</div>
+            <a href="Landing.html" class="home-icon">🏠</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="crafting-container">
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="feature-badge">✨ AI-Powered</div>
+                <h1 class="section-title">Craft Your Perfect Recipe</h1>
+                
+                <div class="input-group">
+                    <label for="recipeInput">Describe your dish or ingredients:</label>
+                    <textarea 
+                        id="recipeInput" 
+                        class="recipe-input" 
+                        placeholder="e.g., Spicy pasta with garlic and herbs, or just list your ingredients: pasta, garlic, tomatoes..."
+                        rows="5"
+                    ></textarea>
+                </div>
+
+                <button id="craftBtn" class="craft-btn">
+                    <span class="btn-text">Craft Recipe</span>
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>Crafting...</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Result Section -->
+            <div class="result-section">
+                <div class="feature-badge">🎯 Professional Grade</div>
+                <h2 class="section-title">Your Crafted Recipe</h2>
+                
+                <div id="placeholder" class="placeholder">
+                    <span class="placeholder-icon">👨‍🍳</span>
+                    <p>Enter your ingredients or dish idea, and watch AI magic create a perfect recipe with detailed instructions, nutritional info, and chef-level techniques!</p>
+                </div>
+
+                <div id="recipeOutput" class="recipe-output">
+                    <h3 id="recipeTitle" class="recipe-title"></h3>
+                    <div id="recipeContent" class="recipe-content"></div>
+                    <button id="copyBtn" class="copy-btn">📋 Copy Recipe</button>
+                </div>
+
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // API Configuration
+        const API_KEY = 'AIzaSyAylB7P7m14nZPrRuxEGB_Q9y9ccC5Fbls'; 
+        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+
+        // DOM Elements
+        const recipeInput = document.getElementById('recipeInput');
+        const craftBtn = document.getElementById('craftBtn');
+        const btnText = document.querySelector('.btn-text');
+        const loading = document.querySelector('.loading');
+        const placeholder = document.getElementById('placeholder');
+        const recipeOutput = document.getElementById('recipeOutput');
+        const recipeTitle = document.getElementById('recipeTitle');
+        const recipeContent = document.getElementById('recipeContent');
+        const copyBtn = document.getElementById('copyBtn');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Event Listeners
+        craftBtn.addEventListener('click', generateRecipe);
+        copyBtn.addEventListener('click', copyRecipe);
+        recipeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                generateRecipe();
+            }
+        });
+
+        // Generate Recipe Function
+        async function generateRecipe() {
+            const userInput = recipeInput.value.trim();
+            
+            if (!userInput) {
+                showError('Please enter some ingredients or describe your dish!');
+                return;
+            }
+
+            // Show loading state
+            craftBtn.disabled = true;
+            btnText.style.display = 'none';
+            loading.style.display = 'flex';
+            hideError();
+
+            try {
+                const prompt = `Create a detailed, professional recipe based on: "${userInput}". 
+
+                Please provide:
+                1. Recipe name
+                2. Ingredients list with precise measurements
+                3. Step-by-step cooking instructions
+                4. Cooking time and serving size
+                5. Nutritional highlights
+                6. Chef tips or variations
+
+                Format the response in a clear, organized way with proper headings and bullet points.`;
+
+                const requestBody = {
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        topK: 40,
+                        topP: 0.95,
+                        maxOutputTokens: 8192,
+                    }
+                };
+
+                console.log('Making API request to:', `${API_URL}?key=${API_KEY}`);
+                console.log('Request body:', JSON.stringify(requestBody, null, 2));
+
+                const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', Object.fromEntries(response.headers));
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('API Error Details:', errorData);
+                    throw new Error(`API Error: ${response.status} - ${errorData.error?.message || response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('API Response:', data);
+
+                if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+                    throw new Error('Invalid response format from API');
+                }
+
+                const recipeText = data.candidates[0].content.parts[0].text;
+                displayRecipe(recipeText);
+
+            } catch (error) {
+                console.error('Error generating recipe:', error);
+                showError(`Sorry, there was an error generating your recipe: ${error.message}`);
+            } finally {
+                // Reset button state
+                craftBtn.disabled = false;
+                btnText.style.display = 'inline';
+                loading.style.display = 'none';
+            }
+        }
+
+        // Display Recipe Function
+        function displayRecipe(recipeText) {
+            // Hide placeholder
+            placeholder.style.display = 'none';
+            
+            // Extract title from the first line or create one
+            const lines = recipeText.split('\n');
+            let title = 'Your Custom Recipe';
+            
+            // Try to find a title in the first few lines
+            for (let i = 0; i < Math.min(3, lines.length); i++) {
+                const line = lines[i].trim();
+                if (line && !line.startsWith('*') && !line.startsWith('-') && !line.match(/^\d+\./)) {
+                    title = line.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim();
+                    break;
+                }
+            }
+            
+            // Format the recipe content
+            const formattedContent = formatRecipeContent(recipeText);
+            
+            // Update DOM
+            recipeTitle.textContent = title;
+            recipeContent.innerHTML = formattedContent;
+            
+            // Show recipe output
+            recipeOutput.classList.add('show');
+        }
+
+        // Format Recipe Content
+        function formatRecipeContent(text) {
+            // Convert markdown-style formatting to HTML
+            let formatted = text
+                .replace(/^#+\s*(.*)$/gm, '<h3>$1</h3>')
+                .replace(/^\*\s*(.*)$/gm, '<li>$1</li>')
+                .replace(/^-\s*(.*)$/gm, '<li>$1</li>')
+                .replace(/^\d+\.\s*(.*)$/gm, '<li>$1</li>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+            // Wrap consecutive list items in ul tags
+            formatted = formatted.replace(/(<li>.*?<\/li>(\s*<li>.*?<\/li>)*)/gs, '<ul>$1</ul>');
+            
+            // Add paragraph breaks for lines that aren't already formatted
+            const lines = formatted.split('\n');
+            let result = '';
+            let inList = false;
+            
+            for (let line of lines) {
+                line = line.trim();
+                if (!line) continue;
+                
+                if (line.includes('<ul>')) {
+                    inList = true;
+                    result += line + '\n';
+                } else if (line.includes('</ul>')) {
+                    inList = false;
+                    result += line + '\n';
+                } else if (line.includes('<h3>') || line.includes('<li>')) {
+                    result += line + '\n';
+                } else if (!inList && line.length > 0) {
+                    result += `<p>${line}</p>\n`;
+                }
+            }
+
+            return result;
+        }
+
+        // Copy Recipe Function
+        function copyRecipe() {
+            const title = recipeTitle.textContent;
+            const content = recipeContent.innerText;
+            const fullRecipe = `${title}\n\n${content}`;
+            
+            navigator.clipboard.writeText(fullRecipe).then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy recipe:', err);
+                showError('Failed to copy recipe to clipboard');
+            });
+        }
+
+        // Error Handling
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            recipeInput.focus();
+        });
+    </script>
+</body>
+</html>
