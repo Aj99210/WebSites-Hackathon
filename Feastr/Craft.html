@@ -60,7 +60,54 @@
                 <div id="recipeOutput" class="recipe-output">
                     <h3 id="recipeTitle" class="recipe-title"></h3>
                     <div id="recipeContent" class="recipe-content"></div>
-                    <button id="copyBtn" class="copy-btn">📋 Copy Recipe</button>
+                    
+                    <!-- Enhanced Button Container -->
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+                        <button id="copyBtn" class="copy-btn">📋 Copy Recipe</button>
+                        <button id="ttsBtn" class="copy-btn" style="background: rgba(52, 152, 219, 0.1); border-color: rgba(52, 152, 219, 0.3); color: #3498db;">
+                            🔊 Read Recipe
+                        </button>
+                        <button id="stopTtsBtn" class="copy-btn" style="background: rgba(231, 76, 60, 0.1); border-color: rgba(231, 76, 60, 0.3); color: #e74c3c; display: none;">
+                            ⏹️ Stop Reading
+                        </button>
+                    </div>
+                    
+                    <!-- TTS Controls -->
+                    <div id="ttsControls" style="margin-top: 1.5rem; padding: 1.5rem; background: rgba(255, 255, 255, 0.1); border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); display: none;">
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-brown);">🎙️ Voice Controls</h4>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark-brown);">Voice:</label>
+                                <select id="voiceSelect" style="width: 100%; padding: 0.5rem; border-radius: 8px; border: 1px solid rgba(139, 90, 60, 0.3); background: rgba(255, 255, 255, 0.9);">
+                                    <option value="">Default Voice</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark-brown);">Speed:</label>
+                                <select id="speedSelect" style="width: 100%; padding: 0.5rem; border-radius: 8px; border: 1px solid rgba(139, 90, 60, 0.3); background: rgba(255, 255, 255, 0.9);">
+                                    <option value="0.5">0.5x (Slow)</option>
+                                    <option value="0.75">0.75x</option>
+                                    <option value="1" selected>1x (Normal)</option>
+                                    <option value="1.25">1.25x</option>
+                                    <option value="1.5">1.5x (Fast)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button id="readTitleBtn" class="copy-btn" style="font-size: 0.9rem; padding: 0.5rem 1rem; background: rgba(46, 204, 113, 0.1); border-color: rgba(46, 204, 113, 0.3); color: #2ecc71;">
+                                📝 Title Only
+                            </button>
+                            <button id="readIngredientsBtn" class="copy-btn" style="font-size: 0.9rem; padding: 0.5rem 1rem; background: rgba(155, 89, 182, 0.1); border-color: rgba(155, 89, 182, 0.3); color: #9b59b6;">
+                                🥕 Ingredients
+                            </button>
+                            <button id="readInstructionsBtn" class="copy-btn" style="font-size: 0.9rem; padding: 0.5rem 1rem; background: rgba(230, 126, 34, 0.1); border-color: rgba(230, 126, 34, 0.3); color: #e67e22;">
+                                👨‍🍳 Instructions
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="errorMessage" class="error-message" style="display: none;"></div>
@@ -85,12 +132,223 @@
         const copyBtn = document.getElementById('copyBtn');
         const errorMessage = document.getElementById('errorMessage');
 
+        // TTS Elements
+        const ttsBtn = document.getElementById('ttsBtn');
+        const stopTtsBtn = document.getElementById('stopTtsBtn');
+        const ttsControls = document.getElementById('ttsControls');
+        const voiceSelect = document.getElementById('voiceSelect');
+        const speedSelect = document.getElementById('speedSelect');
+        const readTitleBtn = document.getElementById('readTitleBtn');
+        const readIngredientsBtn = document.getElementById('readIngredientsBtn');
+        const readInstructionsBtn = document.getElementById('readInstructionsBtn');
+
+        // TTS Variables
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+        let availableVoices = [];
+        let currentRecipeData = null;
+
+        // Initialize TTS
+        function initializeTTS() {
+            if ('speechSynthesis' in window) {
+                loadVoices();
+                speechSynthesis.onvoiceschanged = loadVoices;
+            } else {
+                ttsBtn.style.display = 'none';
+                console.log('Speech synthesis not supported');
+            }
+        }
+
+        // Load Available Voices
+        function loadVoices() {
+            availableVoices = speechSynthesis.getVoices();
+            voiceSelect.innerHTML = '<option value="">Default Voice</option>';
+            
+            availableVoices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                
+                // Prefer English voices
+                if (voice.lang.startsWith('en')) {
+                    option.textContent += ' ⭐';
+                }
+                
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        // Enhanced Text-to-Speech Function
+        function speakText(text, options = {}) {
+            if (currentUtterance) {
+                speechSynthesis.cancel();
+            }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Set voice
+            const selectedVoiceIndex = voiceSelect.value;
+            if (selectedVoiceIndex && availableVoices[selectedVoiceIndex]) {
+                utterance.voice = availableVoices[selectedVoiceIndex];
+            }
+            
+            // Set speed
+            utterance.rate = parseFloat(speedSelect.value);
+            
+            // Set other properties
+            utterance.pitch = options.pitch || 1;
+            utterance.volume = options.volume || 1;
+            
+            // Event listeners
+            utterance.onstart = () => {
+                ttsBtn.style.display = 'none';
+                stopTtsBtn.style.display = 'inline-flex';
+                updateTTSButtonText('🔊 Speaking...');
+            };
+            
+            utterance.onend = () => {
+                ttsBtn.style.display = 'inline-flex';
+                stopTtsBtn.style.display = 'none';
+                updateTTSButtonText('🔊 Read Recipe');
+                currentUtterance = null;
+            };
+            
+            utterance.onerror = (event) => {
+                console.error('Speech synthesis error:', event.error);
+                showError('Error with text-to-speech: ' + event.error);
+                ttsBtn.style.display = 'inline-flex';
+                stopTtsBtn.style.display = 'none';
+                updateTTSButtonText('🔊 Read Recipe');
+                currentUtterance = null;
+            };
+            
+            currentUtterance = utterance;
+            speechSynthesis.speak(utterance);
+        }
+
+        // Update TTS Button Text
+        function updateTTSButtonText(text) {
+            const buttons = [ttsBtn, stopTtsBtn];
+            buttons.forEach(btn => {
+                if (btn && btn.style.display !== 'none') {
+                    btn.innerHTML = text;
+                }
+            });
+        }
+
+        // Clean Text for TTS
+        function cleanTextForTTS(text) {
+            return text
+                .replace(/<[^>]*>/g, '') // Remove HTML tags
+                .replace(/\*\*/g, '') // Remove markdown bold
+                .replace(/\*/g, '') // Remove markdown italic
+                .replace(/#{1,6}\s/g, '') // Remove markdown headers
+                .replace(/\n\s*\n/g, '. ') // Replace double newlines with periods
+                .replace(/\n/g, ' ') // Replace single newlines with spaces
+                .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+                .replace(/(\d+)\./g, '$1.') // Ensure numbers are read properly
+                .trim();
+        }
+
+        // Parse Recipe Sections
+        function parseRecipeForTTS(recipeText) {
+            const sections = {
+                title: '',
+                ingredients: '',
+                instructions: '',
+                full: ''
+            };
+
+            const lines = recipeText.split('\n');
+            let currentSection = '';
+            
+            for (let line of lines) {
+                line = line.trim();
+                if (!line) continue;
+
+                // Detect sections
+                if (line.toLowerCase().includes('ingredient')) {
+                    currentSection = 'ingredients';
+                    continue;
+                } else if (line.toLowerCase().includes('instruction') || line.toLowerCase().includes('method') || line.toLowerCase().includes('step')) {
+                    currentSection = 'instructions';
+                    continue;
+                } else if (line.match(/^#+\s*(.*)$/)) {
+                    // This is a header
+                    const headerText = line.replace(/^#+\s*/, '');
+                    if (!sections.title) {
+                        sections.title = headerText;
+                    }
+                    continue;
+                }
+
+                // Add to appropriate section
+                if (currentSection === 'ingredients') {
+                    sections.ingredients += line + '\n';
+                } else if (currentSection === 'instructions') {
+                    sections.instructions += line + '\n';
+                } else {
+                    sections.full += line + '\n';
+                }
+            }
+
+            // If no specific sections found, use full text
+            if (!sections.ingredients && !sections.instructions) {
+                sections.full = recipeText;
+            }
+
+            return sections;
+        }
+
         // Event Listeners
         craftBtn.addEventListener('click', generateRecipe);
         copyBtn.addEventListener('click', copyRecipe);
         recipeInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && e.ctrlKey) {
                 generateRecipe();
+            }
+        });
+
+        // TTS Event Listeners
+        ttsBtn.addEventListener('click', () => {
+            if (currentRecipeData) {
+                const fullText = `${currentRecipeData.title}. ${cleanTextForTTS(currentRecipeData.full)}`;
+                speakText(fullText);
+                ttsControls.style.display = 'block';
+            }
+        });
+
+        stopTtsBtn.addEventListener('click', () => {
+            if (currentUtterance) {
+                speechSynthesis.cancel();
+                currentUtterance = null;
+                ttsBtn.style.display = 'inline-flex';
+                stopTtsBtn.style.display = 'none';
+                updateTTSButtonText('🔊 Read Recipe');
+            }
+        });
+
+        readTitleBtn.addEventListener('click', () => {
+            if (currentRecipeData && currentRecipeData.title) {
+                speakText(currentRecipeData.title);
+            }
+        });
+
+        readIngredientsBtn.addEventListener('click', () => {
+            if (currentRecipeData && currentRecipeData.ingredients) {
+                const text = `Ingredients: ${cleanTextForTTS(currentRecipeData.ingredients)}`;
+                speakText(text);
+            } else {
+                showError('No ingredients section found');
+            }
+        });
+
+        readInstructionsBtn.addEventListener('click', () => {
+            if (currentRecipeData && currentRecipeData.instructions) {
+                const text = `Instructions: ${cleanTextForTTS(currentRecipeData.instructions)}`;
+                speakText(text);
+            } else {
+                showError('No instructions section found');
             }
         });
 
@@ -198,6 +456,11 @@
             // Format the recipe content
             const formattedContent = formatRecipeContent(recipeText);
             
+            // Parse recipe for TTS
+            currentRecipeData = parseRecipeForTTS(recipeText);
+            currentRecipeData.title = title;
+            currentRecipeData.full = recipeText;
+            
             // Update DOM
             recipeTitle.textContent = title;
             recipeContent.innerHTML = formattedContent;
@@ -276,6 +539,14 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             recipeInput.focus();
+            initializeTTS();
+        });
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (currentUtterance) {
+                speechSynthesis.cancel();
+            }
         });
     </script>
 </body>

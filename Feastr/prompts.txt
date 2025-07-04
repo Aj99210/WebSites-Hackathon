@@ -40,5 +40,53 @@ Broo the navbar of this pagee loooks ugly as hell and doesnt even resembles the 
 Bro the API key is correct but its still not workingg pleasee fix that.. Also Craft_style.css is a different File soo you dont need to re-write that in <style> of Craft.html file.. Just fix the issue
 
 
+Broo this is my current Craft.html... But Sir Said That this is the requirenment... But Since the image api is not free so dont add that, only tts is left... add tts.. tts can be a lil smart if you like just a lil bit.. BUT MAKE SURE EVERYTHING WORKS
+And dontt re-write <style> its already written in another file...
+
+
+
+Sooo Im Making A Website Fester Where Users Have to just Enter There Food Name Or Tell Ingredints and then it uses gemeni API to tell its recepi.... But now its time to make Plan Meals Page Functional..... Make sure its has consistant and nice UI, I even uploaded some screenshots of landing and that recepi page.... 
+What can we do in Plan Meals Page? Maybe Utizlize Gemeni Api there also to doo something....
+
+And for the navbar, Just make the Fester Logo At center and Home Icon at the most right which when clicked, redirects to Landing.html... also heres some reference to root of Craft.html page so that you can try to make UI same:
+:root {
+    --primary-brown: 
+#8b5a3c;
+    --secondary-brown: 
+#a67c5a;
+    --accent-brown: 
+#d4a574;
+    --light-brown: 
+#f4ede4;
+    --dark-brown: 
+#6b4423;
+    --gradient-primary: linear-gradient(135deg, 
+#8b5a3c 0%, 
+#a67c5a 50%, 
+#d4a574 100%);
+    --gradient-secondary: linear-gradient(135deg, 
+#f4ede4 0%, 
+#e8ddd4 100%);
+    --gradient-dark: linear-gradient(135deg, 
+#2c1810 0%, 
+#4a2c1a 100%);
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow-light: 0 8px 32px rgba(139, 90, 60, 0.1);
+    --shadow-medium: 0 12px 40px rgba(139, 90, 60, 0.15);
+    --shadow-heavy: 0 20px 60px rgba(139, 90, 60, 0.25);
+    --border-radius: 20px;
+    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+So this page I guess doesnt Utilizes Genemi Api Properly... And the UI is alsoo very bad.... Re-write the UI and make it best and polish it and also make it professional and it should feeel like AAA company.... Also Remove Unnesscarry features but make sure the main feature work perfetcly... While at same time UI should feal nice tooo.... Ui should bee nicee but the color theme should not  be changed... it should be same that creamish theme.. you know what im talking about.... and my api key is : AIzaSyAylB7P7m14nZPrRuxEGB_Q9y9ccC5Fbls
+
+
+its showing Sorry there was error generating your meal plan please make sure it works correctly
+
+
+Lets do FrontEnd Change Only Im sure itt works.. I have used something like this in my other page.. You can also see how its used in @Craft.html on how APIs is Used and fix it here in @Meal.html .. there something API_URL is also used:
+        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
 
 

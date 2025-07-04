@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Meal Planner - Fester</title>
+    <style>
+        :root {
+            --primary-brown: #8b5a3c;
+            --secondary-brown: #a67c5a;
+            --accent-brown: #d4a574;
+            --light-brown: #f4ede4;
+            --dark-brown: #6b4423;
+            --gradient-primary: linear-gradient(135deg, #8b5a3c 0%, #a67c5a 50%, #d4a574 100%);
+            --gradient-secondary: linear-gradient(135deg, #f4ede4 0%, #e8ddd4 100%);
+            --gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            --shadow-soft: 0 4px 20px rgba(139, 90, 60, 0.1);
+            --shadow-medium: 0 8px 30px rgba(139, 90, 60, 0.15);
+            --shadow-strong: 0 15px 50px rgba(139, 90, 60, 0.2);
+            --border-radius: 16px;
+            --border-radius-large: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gradient-secondary);
+            min-height: 100vh;
+            color: var(--dark-brown);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow-soft);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-brown);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .home-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-brown);
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--secondary-brown);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* AI Input Section */
+        .ai-planner {
+            background: var(--gradient-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius-large);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .ai-planner h2 {
+            color: var(--primary-brown);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .preferences-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .preference-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .preference-item label {
+            font-weight: 500;
+            color: var(--dark-brown);
+            font-size: 0.9rem;
+        }
+
+        .preference-item select,
+        .preference-item input,
+        .preference-item textarea {
+            padding: 0.875rem;
+            border: 2px solid rgba(139, 90, 60, 0.1);
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            transition: var(--transition);
+            color: var(--dark-brown);
+        }
+
+        .preference-item select:focus,
+        .preference-item input:focus,
+        .preference-item textarea:focus {
+            outline: none;
+            border-color: var(--primary-brown);
+            box-shadow: 0 0 0 3px rgba(139, 90, 60, 0.1);
+        }
+
+        .special-requests {
+            grid-column: 1 / -1;
+        }
+
+        .special-requests textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .generate-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .generate-btn .loading {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Meal Plan Display */
+        .meal-plan {
+            background: var(--gradient-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius-large);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .meal-plan h2 {
+            color: var(--primary-brown);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+        }
+
+        .day-column {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            min-height: 300px;
+        }
+
+        .day-header {
+            font-weight: 600;
+            color: var(--primary-brown);
+            text-align: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(139, 90, 60, 0.1);
+        }
+
+        .meal-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--accent-brown);
+            transition: var(--transition);
+        }
+
+        .meal-item:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .meal-type {
+            font-size: 0.8rem;
+            color: var(--secondary-brown);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .meal-name {
+            font-size: 0.9rem;
+            color: var(--dark-brown);
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--secondary-brown);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-brown);
+        }
+
+        /* Grocery List */
+        .grocery-list {
+            background: var(--gradient-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius-large);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .grocery-list h2 {
+            color: var(--primary-brown);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .grocery-items {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .grocery-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .grocery-item:hover {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .grocery-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-brown);
+        }
+
+        .grocery-item label {
+            color: var(--dark-brown);
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .grocery-item.checked label {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            border: 1px solid #fcc;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #363;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            border: 1px solid #cfc;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .preferences-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .week-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                padding: 0 1rem;
+            }
+
+            .logo {
+                font-size: 1.25rem;
+            }
+
+            .home-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .week-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .week-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">
+                <div class="logo-icon">🍽️</div>
+                Fester
+            </a>
+            <a href="landing.html" class="home-btn">
+                <span>🏠</span>
+                Home
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">AI Meal Planner</h1>
+            <p class="hero-subtitle">
+                Let our AI create personalized meal plans tailored to your preferences, dietary needs, and lifestyle
+            </p>
+        </section>
+
+        <!-- AI Planner Section -->
+        <section class="ai-planner">
+            <h2>
+                <span>🤖</span>
+                Tell us your preferences
+            </h2>
+            
+            <div id="message-container"></div>
+            
+            <div class="preferences-grid">
+                <div class="preference-item">
+                    <label for="dietary-prefs">Dietary Preferences</label>
+                    <select id="dietary-prefs">
+                        <option value="">Any</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="keto">Keto</option>
+                        <option value="paleo">Paleo</option>
+                        <option value="mediterranean">Mediterranean</option>
+                        <option value="low-carb">Low Carb</option>
+                        <option value="gluten-free">Gluten Free</option>
+                        <option value="dairy-free">Dairy Free</option>
+                    </select>
+                </div>
+                
+                <div class="preference-item">
+                    <label for="cuisine-type">Cuisine Preference</label>
+                    <select id="cuisine-type">
+                        <option value="">Any Cuisine</option>
+                        <option value="italian">Italian</option>
+                        <option value="asian">Asian</option>
+                        <option value="mexican">Mexican</option>
+                        <option value="indian">Indian</option>
+                        <option value="american">American</option>
+                        <option value="mediterranean">Mediterranean</option>
+                        <option value="middle-eastern">Middle Eastern</option>
+                        <option value="french">French</option>
+                    </select>
+                </div>
+
+                <div class="preference-item">
+                    <label for="budget">Budget Range</label>
+                    <select id="budget">
+                        <option value="">Any Budget</option>
+                        <option value="budget">Budget-friendly (₹)</option>
+                        <option value="moderate">Moderate (₹₹)</option>
+                        <option value="premium">Premium (₹₹₹)</option>
+                    </select>
+                </div>
+
+                <div class="preference-item">
+                    <label for="cook-time">Max Cooking Time</label>
+                    <select id="cook-time">
+                        <option value="">Any Duration</option>
+                        <option value="15">15 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="90">1.5 hours</option>
+                    </select>
+                </div>
+
+                <div class="preference-item special-requests">
+                    <label for="special-requests">Special Requests & Allergies</label>
+                    <textarea id="special-requests" placeholder="e.g., Nut allergies, high protein, comfort food, seasonal ingredients, family-friendly meals..."></textarea>
+                </div>
+            </div>
+
+            <button class="generate-btn" id="generate-btn" onclick="generateMealPlan()">
+                <span id="btn-icon">✨</span>
+                <span id="btn-text">Generate My Meal Plan</span>
+            </button>
+        </section>
+
+        <!-- Meal Plan Display -->
+        <section class="meal-plan">
+            <h2>
+                <span>📅</span>
+                Your Weekly Meal Plan
+            </h2>
+            
+            <div id="meal-plan-content">
+                <div class="empty-state">
+                    <div class="empty-state-icon">🍽️</div>
+                    <h3>Ready to plan your meals?</h3>
+                    <p>Fill in your preferences above and click "Generate My Meal Plan" to get started</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grocery List -->
+        <section class="grocery-list">
+            <h2>
+                <span>🛒</span>
+                Smart Grocery List
+            </h2>
+            
+            <div id="grocery-content">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📝</div>
+                    <h3>Grocery list will appear here</h3>
+                    <p>Generate a meal plan first to see your shopping list</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Replace with your actual Gemini API key
+        const API_KEY = 'AIzaSyAylB7P7m14nZPrRuxEGB_Q9y9ccC5Fbls';
+        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+        let currentMealPlan = null;
+
+        // Show message to user
+        function showMessage(message, type = 'info') {
+            const container = document.getElementById('message-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+            messageDiv.textContent = message;
+            
+            container.innerHTML = '';
+            container.appendChild(messageDiv);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Generate meal plan using Gemini AI
+        async function generateMealPlan() {
+            const btn = document.getElementById('generate-btn');
+            const btnIcon = document.getElementById('btn-icon');
+            const btnText = document.getElementById('btn-text');
+            
+            // Check if API key is set
+            if (API_KEY === 'YOUR_GEMINI_API_KEY_HERE') {
+                showMessage('Please set your Gemini API key in the code', 'error');
+                return;
+            }
+            
+            // Show loading state
+            btn.disabled = true;
+            btnIcon.innerHTML = '<div class="loading"></div>';
+            btnText.textContent = 'Generating your meal plan...';
+            
+            try {
+                // Get user preferences
+                const preferences = {
+                    dietary: document.getElementById('dietary-prefs').value,
+                    cuisine: document.getElementById('cuisine-type').value,
+                    budget: document.getElementById('budget').value,
+                    cookTime: document.getElementById('cook-time').value,
+                    special: document.getElementById('special-requests').value
+                };
+
+                // Create prompt for Gemini
+                const prompt = createMealPlanPrompt(preferences);
+                
+                // Call Gemini API
+                let response;
+                try {
+                    response = await callGeminiAPI(prompt);
+                    console.log('Gemini API raw response:', response);
+                } catch(apiError) {
+                    console.error('Gemini API call failed:', apiError);
+                    showMessage('Gemini API call failed: ' + apiError.message, 'error');
+                    return;
+                }
+                
+                if (response.candidates && response.candidates[0] && response.candidates[0].content) {
+                    const mealPlanText = response.candidates[0].content.parts[0].text;
+                    console.log('Gemini API meal plan text:', mealPlanText);
+                    const mealPlan = parseMealPlan(mealPlanText);
+                    
+                    if (mealPlan) {
+                        currentMealPlan = mealPlan;
+                        displayMealPlan(mealPlan);
+                        await generateGroceryList(mealPlan);
+                        showMessage('Meal plan generated successfully! 🎉', 'success');
+                    } else {
+                        showMessage('Failed to parse meal plan. Check console for details.', 'error');
+                        console.error('Meal plan parse error. Raw text:', mealPlanText);
+                    }
+                } else {
+                    showMessage('Invalid response from AI. Check console for details.', 'error');
+                    console.error('AI response missing candidates/content:', response);
+                }
+                
+            } catch (error) {
+                console.error('Error generating meal plan:', error);
+                showMessage('Sorry, there was an error generating your meal plan. See console for details.', 'error');
+            } finally {
+                // Reset button
+                btn.disabled = false;
+                btnIcon.textContent = '✨';
+                btnText.textContent = 'Generate My Meal Plan';
+            }
+        }
+
+        // Create prompt for Gemini API
+        function createMealPlanPrompt(preferences) {
+            let prompt = `Create a 7-day meal plan with breakfast, lunch, and dinner for each day. 
+
+Requirements:
+- Provide exactly 7 days (Monday to Sunday)
+- Include breakfast, lunch, and dinner for each day
+- Make meals diverse and balanced
+- Format the response as JSON with this exact structure:
+{
+  "monday": {"breakfast": "meal name", "lunch": "meal name", "dinner": "meal name"},
+  "tuesday": {"breakfast": "meal name", "lunch": "meal name", "dinner": "meal name"},
+  "wednesday": {"breakfast": "meal name", "lunch": "meal name", "dinner": "meal name"},
+  "thursday": {"breakfast": "meal name", "lunch": "meal name", "dinner": "meal name"},
+  "friday": {"breakfast": "meal name", "lunch": "meal name", "dinner": "meal name"},
+  "saturday": {"breakfast": "meal name", "lunch": "meal name", "dinner": "meal name"},
+  "sunday": {"breakfast": "meal name", "lunch": "meal name", "dinner": "meal name"}
+}
+
+User preferences:`;
+
+            if (preferences.dietary) {
+                prompt += `\n- Dietary preference: ${preferences.dietary}`;
+            }
+            if (preferences.cuisine) {
+                prompt += `\n- Cuisine preference: ${preferences.cuisine}`;
+            }
+            if (preferences.budget) {
+                prompt += `\n- Budget: ${preferences.budget}`;
+            }
+            if (preferences.cookTime) {
+                prompt += `\n- Max cooking time: ${preferences.cookTime} minutes`;
+            }
+            if (preferences.special) {
+                prompt += `\n- Special requests: ${preferences.special}`;
+            }
+
+            prompt += `\n\nPlease provide ONLY the JSON response, no additional text or explanations.`;
+
+            return prompt;
+        }
+
+        // Call Gemini API
+        async function callGeminiAPI(prompt) {
+            const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }]
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
+            }
+            
+            return await response.json();
+        }
+
+        // Parse meal plan from AI response
+        function parseMealPlan(text) {
+            try {
+                // Extract JSON from the response
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) {
+                    throw new Error('No JSON found in response');
+                }
+                
+                const mealPlan = JSON.parse(jsonMatch[0]);
+                
+                // Validate structure
+                const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                const meals = ['breakfast', 'lunch', 'dinner'];
+                
+                for (const day of days) {
+                    if (!mealPlan[day]) {
+                        throw new Error(`Missing day: ${day}`);
+                    }
+                    for (const meal of meals) {
+                        if (!mealPlan[day][meal]) {
+                            throw new Error(`Missing meal: ${meal} for ${day}`);
+                        }
+                    }
+                }
+                
+                return mealPlan;
+            } catch (error) {
+                console.error('Error parsing meal plan:', error);
+                return null;
+            }
+        }
+
+        // Display meal plan
+        function displayMealPlan(mealPlan) {
+            const content = document.getElementById('meal-plan-content');
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            
+            const gridHTML = `
+                <div class="week-grid">
+                    ${days.map((day, index) => `
+                        <div class="day-column">
+                            <div class="day-header">${dayLabels[index]}</div>
+                            <div class="meal-item">
+                                <div class="meal-type">Breakfast</div>
+                                <div class="meal-name">${mealPlan[day].breakfast}</div>
+                            </div>
+                            <div class="meal-item">
+                                <div class="meal-type">Lunch</div>
+                                <div class="meal-name">${mealPlan[day].lunch}</div>
+                            </div>
+                            <div class="meal-item">
+                                <div class="meal-type">Dinner</div>
+                                <div class="meal-name">${mealPlan[day].dinner}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            content.innerHTML = gridHTML;
+        }
+
+        // Generate grocery list
+        async function generateGroceryList(mealPlan) {
+            try {
+                const allMeals = [];
+                const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                
+                days.forEach(day => {
+                    allMeals.push(mealPlan[day].breakfast);
+                    allMeals.push(mealPlan[day].lunch);
+                    allMeals.push(mealPlan[day].dinner);
+                });
+
+                const prompt = `Based on these meals, create a comprehensive grocery shopping list. Group items by category and avoid duplicates:
+
+Meals: ${allMeals.join(', ')}
+
+Format the response as JSON with this structure:
+{
+  "Produce": ["item1", "item2"],
+  "Meat & Seafood": ["item1", "item2"],
+  "Dairy": ["item1", "item2"],
+  "Pantry": ["item1", "item2"],
+  "Frozen": ["item1", "item2"],
+  "Other": ["item1", "item2"]
+}
+
+Include quantities where helpful (e.g., "2 lbs chicken breast", "1 bunch spinach"). Provide ONLY the JSON response.`;
+
+                const response = await callGeminiAPI(prompt);
+                
+                if (response.candidates && response.candidates[0] && response.candidates[0].content) {
+                    const groceryText = response.candidates[0].content.parts[0].text;
+                    const groceryList = parseGroceryList(groceryText);
+                    
+                    if (groceryList) {
+                        displayGroceryList(groceryList);
+                    }
+                }
+            } catch (error) {
+                console.error('Error generating grocery list:', error);
+                showMessage('Could not generate grocery list, but meal plan is ready!', 'error');
+            }
+        }
+
+        // Parse grocery list from AI response
+        function parseGroceryList(text) {
+            try {
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) {
+                    throw new Error('No JSON found in grocery response');
+                }
+                
+                return JSON.parse(jsonMatch[0]);
+            } catch (error) {
+                console.error('Error parsing grocery list:', error);
+                return null;
+            }
+        }
+
+        // Display grocery list
+        function displayGroceryList(groceryList) {
+            const content = document.getElementById('grocery-content');
+            let itemId = 0;
+            
+            const listHTML = Object.entries(groceryList).map(([category, items]) => {
+                if (!items || items.length === 0) return '';
+                
+                return `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: var(--primary-brown); margin-bottom: 0.75rem; font-size: 1.1rem; font-weight: 600;">${category}</h4>
+                        <div class="grocery-items">
+                            ${items.map(item => `
+                                <div class="grocery-item">
+                                    <input type="checkbox" id="item-${itemId++}" onchange="toggleGroceryItem(this)">
+                                    <label for="item-${itemId-1}">${item}</label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            content.innerHTML = listHTML;
+        }
+
+        // Toggle grocery item
+        function toggleGroceryItem(checkbox) {
+            const item = checkbox.closest('.grocery-item');
+            const label = item.querySelector('label');
+            const itemText = label ? label.textContent : '';
+            if (checkbox.checked) {
+                item.classList.add('checked');
+                saveGroceryItemState(itemText, true);
+            } else {
+                item.classList.remove('checked');
+                saveGroceryItemState(itemText, false);
+            }
+        }
+
+        // Save grocery item checked state to localStorage
+        function saveGroceryItemState(itemText, checked) {
+            let state = JSON.parse(localStorage.getItem('groceryItemState') || '{}');
+            state[itemText] = checked;
+            localStorage.setItem('groceryItemState', JSON.stringify(state));
+        }
+
+        // Restore grocery item checked state from localStorage
+        function restoreGroceryItemState() {
+            let state = JSON.parse(localStorage.getItem('groceryItemState') || '{}');
+            document.querySelectorAll('.grocery-item').forEach(item => {
+                const label = item.querySelector('label');
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                if (!label || !checkbox) return;
+                const itemText = label.textContent;
+                if (state[itemText]) {
+                    checkbox.checked = true;
+                    item.classList.add('checked');
+                } else {
+                    checkbox.checked = false;
+                    item.classList.remove('checked');
+                }
+            });
+        }
+
+        // Restore checked state on grocery list render
+        const origDisplayGroceryList = displayGroceryList;
+        displayGroceryList = function(groceryList) {
+            origDisplayGroceryList(groceryList);
+            restoreGroceryItemState();
+        }
+
+        // Restore checked state on page load (if grocery list is already present)
+        window.addEventListener('DOMContentLoaded', function() {
+            restoreGroceryItemState();
+        });
+
+        // End of script
+    </script>
+</body>
+</html>
