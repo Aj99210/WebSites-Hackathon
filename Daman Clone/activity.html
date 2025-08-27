@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity - Daman Clone</title>
+    <style>
+        /* General Setup - Same as index.html */
+        body {
+          margin: 0;
+          font-family: sans-serif;
+          background-color: #949fa6;
+        }
+
+        #app-container {
+          width: 100%;
+          min-height: 100vh;
+          margin: 0 auto;
+          background-color: #f7f8ff;
+          position: relative;
+          overflow-x: hidden;
+        }
+
+        /* This part only applies to screens WIDER than 505px */
+        @media (min-width: 505px) {
+            #app-container {
+                max-width: 430px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+        }
+
+        /* Activity Header */
+        .activity-header {
+            background: linear-gradient(135deg, #fa5a5a, #ff988c);
+            padding: 20px 15px 40px 15px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .activity-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .daman-logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: rgba(255,255,255,0.9);
+            color: #fa5a5a;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .activity-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .activity-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.4;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Activity Buttons Grid */
+        .activity-buttons {
+            padding: 20px 15px;
+        }
+
+        .activity-buttons-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .activity-buttons-row.single {
+            grid-template-columns: 1fr;
+            max-width: 200px;
+            margin: 0;
+            justify-self: start;
+        }
+
+        .activity-btn {
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 5px;
+        }
+
+        .activity-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .activity-btn-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 10px auto;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-btn-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+
+        .activity-award .activity-btn-icon {
+            background: linear-gradient(135deg, #ff6b6b, #ff8787, #ffb3b3);
+        }
+
+        .invitation-bonus .activity-btn-icon {
+            background: linear-gradient(135deg, #4dabf7, #74c0fc, #a3d5fd);
+        }
+
+        .betting-rebate .activity-btn-icon {
+            background: linear-gradient(135deg, #ffa726, #ffcc02, #ffe066);
+        }
+
+        .super-jackpot .activity-btn-icon {
+            background: linear-gradient(135deg, #4ecdc4, #66d9ef, #99e6f7);
+        }
+
+        .first-gift .activity-btn-icon {
+            background: linear-gradient(135deg, #9c88ff, #b197fc, #d4b3ff);
+        }
+
+        .activity-btn-text {
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Footer Navigation Bar - Same as index.html */
+        .footer-nav {
+          position: fixed; 
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 100%;
+          max-width: 430px;
+          box-sizing: border-box;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          background-color: #ffffff;
+          border-top: 1px solid #f0f0f0;
+          z-index: 1000;
+          padding: 5px 0;
+        }
+
+        .nav-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-decoration: none;
+          color: #949fa6;
+          flex-grow: 1;
+        }
+
+        .nav-icon {
+          width: 24px;
+          height: 24px;
+          margin-bottom: 2px;
+        }
+
+        .nav-text {
+          font-size: 10px;
+          font-weight: 500;
+        }
+
+        .nav-item.active .nav-text {
+          color: #fa5a5a;
+        }
+        .nav-item.active .nav-icon {
+          stroke: #fa5a5a;
+          fill: #fa5a5a1a;
+        }
+
+        /* Special Promotion Button */
+        .nav-item-promo-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+          flex-grow: 1;
+        }
+
+        .promo-cutout {
+          position: absolute;
+          width: 75px;
+          height: 75px;
+          background-color: #f7f8ff;
+          border-radius: 50%;
+          top: -10px;
+          z-index: 1;
+        }
+
+        .promo-button {
+          width: 60px;
+          height: 60px;
+          background-image: linear-gradient(to top, #fa5a5a, #ff988c);
+          border-radius: 50%;
+          border-color: #fff;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: absolute;
+          top: -25px;
+          box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+          z-index: 2;
+        }
+
+        .promo-icon-img {
+          width: 24px;
+          height: 24px;
+        }
+
+        .nav-item-promo-wrapper .nav-text {
+          margin-top: 40px;
+          color: #949fa6;
+        }
+
+        /* --- Bonus Section --- */
+        .bonus-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Creates two equal columns */
+            gap: 15px;
+            padding: 20px 15px;
+        }
+
+        .bonus-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            text-decoration: none;
+            color: #333;
+            overflow: hidden; /* Ensures the image corners respect the border-radius */
+            transition: transform 0.2s ease;
+        }
+
+        .bonus-card:hover {
+            transform: translateY(-3px); /* A nice little hover effect */
+        }
+
+        .bonus-card img {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 10; /* Gives the image a consistent shape */
+            object-fit: cover;
+        }
+
+        .bonus-card-text {
+            padding: 15px;
+        }
+
+        .bonus-card-text h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+        }
+
+        .bonus-card-text p {
+            margin: 0;
+            font-size: 12px;
+            color: #888;
+            line-height: 1.4;
+        }
+
+        /* --- Promotional Banner Section --- */
+        .promo-banner-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Space between each banner item */
+            padding: 20px 15px;
+        }
+
+        .promo-banner-item img {
+            width: 100%;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .promo-banner-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 10px; /* Space between image and title */
+            margin-bottom: 12px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <!-- Activity Header -->
+        <div class="activity-header">
+            <div class="header-top">
+                <div class="daman-logo">
+                    <div class="logo-icon">D</div>
+                    Daman
+                </div>
+            </div>
+            <div class="activity-title">Activity</div>
+            <div class="activity-subtitle">
+                Please remember to follow the event page<br>
+                We will launch user feedback activities from time to time
+            </div>
+        </div>
+
+        <!-- Activity Buttons -->
+        <div class="activity-buttons">
+            <!-- First row - 4 buttons -->
+            <div class="activity-buttons-row">
+                <a href="#" class="activity-btn activity-award">
+                    <div class="activity-btn-icon">🏆</div>
+                    <div class="activity-btn-text">Activity Award</div>
+                </a>
+
+                <a href="#" class="activity-btn invitation-bonus">
+                    <div class="activity-btn-icon">👥</div>
+                    <div class="activity-btn-text">Invitation bonus</div>
+                </a>
+
+                <a href="#" class="activity-btn betting-rebate">
+                    <div class="activity-btn-icon">💰</div>
+                    <div class="activity-btn-text">Betting rebate</div>
+                </a>
+
+                <a href="#" class="activity-btn super-jackpot">
+                    <div class="activity-btn-icon">💎</div>
+                    <div class="activity-btn-text">Super Jackpot</div>
+                </a>
+            </div>
+
+            <!-- Second row - 1 button centered -->
+            <div class="activity-buttons-row single">
+                <a href="#" class="activity-btn first-gift">
+                    <div class="activity-btn-icon">🎁</div>
+                    <div class="activity-btn-text">First gift</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Bonus Section -->
+        <div class="bonus-section">
+            <a href="#" class="bonus-card">
+                <img src="assets/images/gifts.png" alt="Gifts">
+                <div class="bonus-card-text">
+                    <h3>Gifts</h3>
+                    <p>Enter the redemption code to receive gift rewards</p>
+                </div>
+            </a>
+            <a href="#" class="bonus-card">
+                <img src="assets/images/Attendence.png" alt="Attendance Bonus">
+                <div class="bonus-card-text">
+                    <h3>Attendance bonus</h3>
+                    <p>The more consecutive days you sign in, the higher the reward will be.</p>
+                </div>
+            </a>
+        </div>
+        <!-- END OF NEW SECTION -->
+
+        <!-- Banner Section -->
+        <div class="promo-banner-container">
+            <div class="promo-banner-item">
+                <a href="#">
+                    <img src="assets/images/bonus.png" alt="Promotional Banner">
+                </a>
+                <h3 class="promo-banner-title">Become Agent Enjoy Luxury Rewards</h3>
+            </div>
+            
+            <div class="promo-banner-item">
+                <a href="#">
+                    <img src="assets/images/member_activity.png" alt="Promotional Banner">
+                </a>
+                <h3 class="promo-banner-title">⭐ Member Activities Winning Streak ⭐</h3>
+            </div>
+            
+            <div class="promo-banner-item">
+                <a href="#">
+                    <img src="assets/images/high_award.png" alt="Promotional Banner">
+                </a>
+                <h3 class="promo-banner-title">⭐ Aviator High Betting Award ⭐</h3>
+            </div>
+            
+            <div class="promo-banner-item">
+                <a href="#">
+                    <img src="assets/images/lucky_interest.png" alt="Promotional Banner">
+                </a>
+                <h3 class="promo-banner-title">Lucky "10" Days Of Interest</h3> 
+            </div>
+
+            <div class="promo-banner-item">
+                <a href="#">
+                    <img src="assets/images/youtube_vid.png" alt="Promotional Banner">
+                </a>
+                <h3 class="promo-banner-title">🔴 Youtube Creative Video 🔴</h3>
+            </div>
+            
+            <div class="promo-banner-item">
+                <a href="#">
+                    <img src="assets/images/mysterious_gift.png" alt="Promotional Banner">
+                </a>
+                <h3 class="promo-banner-title">❗ Mysterious_gift ❗</h3>
+            </div>
+
+            <div class="promo-banner-item">
+                <a href="#">
+                    <img src="assets/images/high_banner.png" alt="Promotional Banner">
+                </a>
+                <h3 class="promo-banner-title">☺️ Thanks to all members ☺️</h3>
+            </div>
+        </div>
+
+        <!-- Footer Navigation (same as index.html) -->
+        <nav class="footer-nav">
+            <a href="index.html" class="nav-item active">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span class="nav-text">Home</span>
+            </a>
+            <a href="activity.html" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span class="nav-text">Activity</span>
+            </a>
+            <div class="nav-item-promo-wrapper">
+                <div class="promo-cutout"></div>
+                <a href="promotion.html" class="promo-button">
+                    <img src="assets/images/diamond.png" alt="Promotion" class="promo-icon-img">
+                </a>
+                <span class="nav-text">Promotion</span>
+            </div>
+            <a href="wallet.html" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <span class="nav-text">Wallet</span>
+            </a>
+            <a href="account.html" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span class="nav-text">Account</span>
+            </a>
+        </nav>
+    </div>
+</body>
+</html>

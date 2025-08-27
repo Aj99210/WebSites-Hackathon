@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmSim Pro - Hardcore Farming Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fffe 0%, #f1f8f5 100%);
+            color: #1a1a1a;
+            line-height: 1.6;
+            overflow-x: hidden;
+            user-select: none;
+            min-height: 100vh;
+        }
+
+        /* Game UI Header */
+        .game-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid #e5e5e5;
+            z-index: 100;
+            padding: 0 2rem;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+
+        .game-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2d5a3d;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4ade80, #2d5a3d);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(45, 90, 61, 0.3);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            border: 2px solid #e5e5e5;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-level {
+            background: #2d5a3d;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Main Game Interface */
+        .game-container {
+            padding-top: 80px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-panel {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            border: 3px solid #e5e5e5;
+            overflow: hidden;
+            max-width: 1100px;
+            width: 100%;
+            margin: 2rem;
+            position: relative;
+        }
+
+        .panel-header {
+            background: linear-gradient(135deg, #f8fffe, #f1f8f5);
+            border-bottom: 2px solid #e5e5e5;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .panel-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4ade80, #2d5a3d, #4ade80);
+        }
+
+        .game-title {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .difficulty-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #fef3c7, #fbbf24);
+            color: #92400e;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+            50% { box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5); }
+        }
+
+        .panel-content {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        /* Game Info Section */
+        .game-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .objective-card {
+            background: #f8fffe;
+            border: 2px solid #4ade80;
+            border-radius: 15px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .objective-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #4ade80, #2d5a3d);
+        }
+
+        .objective-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2d5a3d;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .objective-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #2d5a3d;
+            margin-bottom: 0.5rem;
+        }
+
+        .objective-desc {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .game-rules {
+            background: #fff5f5;
+            border: 2px solid #f87171;
+            border-radius: 15px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .game-rules::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #f87171, #dc2626);
+        }
+
+        .rules-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #dc2626;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rules-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .rules-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature-item {
+            background: white;
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #4ade80;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        /* Game Preview */
+        .game-preview {
+            background: #f8fffe;
+            border: 3px solid #e5e5e5;
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e5e5e5;
+            text-align: center;
+        }
+
+        .coins-display {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2d5a3d;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            background: #e5e5e5;
+            border-radius: 50px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4ade80, #2d5a3d);
+            height: 100%;
+            width: 0%;
+            border-radius: 50px;
+            transition: width 0.5s ease;
+        }
+
+        .farm-simulation {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 2px solid #e5e5e5;
+        }
+
+        .farm-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .farm-cell {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid #22c55e;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+        }
+
+        .farm-cell:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .farm-cell:nth-child(5n) { 
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-color: #f59e0b;
+        }
+        .farm-cell:nth-child(7n) { 
+            background: linear-gradient(135deg, #f87171, #dc2626);
+            border-color: #dc2626;
+        }
+        .farm-cell:nth-child(11n) { 
+            background: linear-gradient(135deg, #c084fc, #9333ea);
+            border-color: #9333ea;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #4ade80, #2d5a3d);
+            color: white;
+            padding: 1.2rem 2.5rem;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 6px 20px rgba(45, 90, 61, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-start::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-start:hover::before {
+            left: 100%;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(45, 90, 61, 0.4);
+        }
+
+        .btn-info {
+            background: white;
+            color: #2d5a3d;
+            padding: 1.2rem 2rem;
+            border: 3px solid #2d5a3d;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-info:hover {
+            background: #2d5a3d;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Floating particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: float-particle 8s infinite ease-in-out;
+            opacity: 0.6;
+        }
+
+        @keyframes float-particle {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-30px) rotate(90deg); }
+            50% { transform: translateY(-10px) rotate(180deg); }
+            75% { transform: translateY(-25px) rotate(270deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .panel-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .game-title {
+                font-size: 2rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-start,
+            .btn-info {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .farm-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .farm-cell {
+                width: 35px;
+                height: 35px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Hover effects */
+        .interactive:hover {
+            transform: scale(1.02);
+            transition: transform 0.2s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Game Header -->
+    <header class="game-header">
+        <div class="header-content">
+            <div class="game-logo">
+                <div class="logo-icon">🌾</div>
+                <span>FarmSim Pro</span>
+            </div>
+            <div class="player-info">
+                <div class="player-level">NEW PLAYER</div>
+                <span>🎮 Ready to Start</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Container -->
+    <div class="game-container">
+        <div class="game-panel loading">
+            <!-- Floating Particles -->
+            <div class="particles">
+                <div class="particle" style="top: 10%; left: 5%; animation-delay: 0s;">🌱</div>
+                <div class="particle" style="top: 20%; right: 10%; animation-delay: 1s;">🥕</div>
+                <div class="particle" style="bottom: 30%; left: 8%; animation-delay: 2s;">🌽</div>
+                <div class="particle" style="top: 60%; right: 15%; animation-delay: 3s;">🍅</div>
+                <div class="particle" style="bottom: 20%; right: 20%; animation-delay: 4s;">🥔</div>
+            </div>
+
+            <!-- Panel Header -->
+            <div class="panel-header">
+                <h1 class="game-title">HARDCORE FARMING CHALLENGE</h1>
+                <p class="game-subtitle">Build Your Agricultural Empire • Reach 1,000,000 Coins</p>
+                <div class="difficulty-badge">
+                    ⚡ HARDCORE MODE ACTIVE
+                </div>
+            </div>
+
+            <!-- Panel Content -->
+            <div class="panel-content">
+                <!-- Game Info -->
+                <div class="game-info">
+                    <div class="objective-card interactive">
+                        <div class="objective-title">
+                            🎯 MISSION OBJECTIVE
+                        </div>
+                        <div class="objective-value">1,000,000 💰</div>
+                        <div class="objective-desc">
+                            Farm your way to one million coins through strategic planting, harvesting, and trading.
+                        </div>
+                    </div>
+
+                    <div class="game-rules">
+                        <div class="rules-title">
+                            ⚠️ HARDCORE RULES
+                        </div>
+                        <ul class="rules-list">
+                            <li>❌ No save system - progress resets on page close</li>
+                            <li>⏰ Time-sensitive crop growth cycles</li>
+                            <li>📈 Dynamic market prices</li>
+                            <li>🎲 Random weather events</li>
+                            <li>🏆 One attempt to reach the goal</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-grid">
+                        <div class="feature-item interactive">
+                            <div class="feature-icon">🌾</div>
+                            <div class="feature-name">Crop Management</div>
+                        </div>
+                        <div class="feature-item interactive">
+                            <div class="feature-icon">💰</div>
+                            <div class="feature-name">Market Trading</div>
+                        </div>
+                        <div class="feature-item interactive">
+                            <div class="feature-icon">🔧</div>
+                            <div class="feature-name">Tool Upgrades</div>
+                        </div>
+                        <div class="feature-item interactive">
+                            <div class="feature-icon">🌦️</div>
+                            <div class="feature-name">Weather System</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Preview -->
+                <div class="game-preview">
+                    <div class="preview-header">
+                        <div class="coins-display">💰 <span id="coinCounter">0</span> / 1,000,000</div>
+                        <div>Progress to Goal</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressBar"></div>
+                        </div>
+                    </div>
+
+                    <div class="farm-simulation">
+                        <div style="text-align: center; margin-bottom: 1rem;">
+                            <strong>🏡 Your Farm Preview</strong>
+                        </div>
+                        <div class="farm-grid">
+                            <div class="farm-cell">🌱</div>
+                            <div class="farm-cell">🌾</div>
+                            <div class="farm-cell">🥕</div>
+                            <div class="farm-cell">🌽</div>
+                            <div class="farm-cell">🍅</div>
+                            <div class="farm-cell">🥔</div>
+                            <div class="farm-cell">🌿</div>
+                            <div class="farm-cell">🌱</div>
+                            <div class="farm-cell">🌾</div>
+                            <div class="farm-cell">🥕</div>
+                            <div class="farm-cell">🌽</div>
+                            <div class="farm-cell">🍅</div>
+                            <div class="farm-cell">🥔</div>
+                            <div class="farm-cell">🌿</div>
+                            <div class="farm-cell">🌱</div>
+                            <div class="farm-cell">🌾</div>
+                            <div class="farm-cell">🥕</div>
+                            <div class="farm-cell">🌽</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="index.html" class="btn-start">
+                    🚀 START GAME
+                </a>
+                <a href="#" class="btn-info" onclick="showGameInfo()">
+                    📖 HOW TO PLAY
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Interactive farm grid
+        document.querySelectorAll('.farm-cell').forEach(cell => {
+            cell.addEventListener('click', function() {
+                const crops = ['🌱', '🌾', '🥕', '🌽', '🍅', '🥔', '🌿', '🥒', '🍆', '🥬'];
+                this.textContent = crops[Math.floor(Math.random() * crops.length)];
+                
+                // Add a small animation
+                this.style.transform = 'scale(1.2) rotate(10deg)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+
+        // Coin counter animation
+        function animateCoinCounter() {
+            const counter = document.getElementById('coinCounter');
+            const progressBar = document.getElementById('progressBar');
+            let count = 0;
+            const target = Math.floor(Math.random() * 50000) + 1000;
+            const increment = target / 150;
+            
+            const timer = setInterval(() => {
+                count += increment;
+                if (count >= target) {
+                    counter.textContent = target.toLocaleString();
+                    progressBar.style.width = (target / 1000000 * 100) + '%';
+                    clearInterval(timer);
+                } else {
+                    counter.textContent = Math.floor(count).toLocaleString();
+                    progressBar.style.width = (count / 1000000 * 100) + '%';
+                }
+            }, 20);
+        }
+
+        // Auto-update farm cells
+        function autoUpdateFarm() {
+            const cells = document.querySelectorAll('.farm-cell');
+            const crops = ['🌱', '🌾', '🥕', '🌽', '🍅', '🥔', '🌿', '🥒', '🍆', '🥬'];
+            
+            setInterval(() => {
+                const randomCell = cells[Math.floor(Math.random() * cells.length)];
+                const randomCrop = crops[Math.floor(Math.random() * crops.length)];
+                
+                randomCell.style.transform = 'scale(1.1)';
+                randomCell.textContent = randomCrop;
+                
+                setTimeout(() => {
+                    randomCell.style.transform = '';
+                }, 300);
+            }, 2000);
+        }
+
+        // Show game info modal
+        function showGameInfo() {
+            alert(`🎮 HOW TO PLAY FARMSIM PRO:
+
+🌱 FARMING:
+• Plant crops by clicking on farm plots
+• Water and care for your crops
+• Harvest when ready for maximum profit
+
+💰 TRADING:
+• Watch market prices carefully
+• Buy low, sell high
+• Upgrade tools to increase efficiency
+
+⚡ HARDCORE MODE:
+• No saves - one chance only!
+• Dynamic weather affects crops
+• Random events can help or hurt
+• Goal: Reach 1,000,000 coins
+
+Good luck, farmer! 🚜`);
+        }
+
+        // Initialize animations
+        window.addEventListener('load', () => {
+            setTimeout(animateCoinCounter, 500);
+            setTimeout(autoUpdateFarm, 1000);
+        });
+
+        // Add random particle movements
+        document.querySelectorAll('.particle').forEach((particle, index) => {
+            particle.style.animationDelay = (index * 0.5) + 's';
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.game-header');
+            if (window.scrollY > 50) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+                header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = 'none';
+            }
+        });
+
+        // Feature item interactions
+        document.querySelectorAll('.feature-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.background = 'linear-gradient(135deg, #f8fffe, #f1f8f5)';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                item.style.background = 'white';
+            });
+        });
+
+        // Add typing effect to subtitle
+        function typeEffect() {
+            const subtitle = document.querySelector('.game-subtitle');
+            const text = subtitle.textContent;
+            subtitle.textContent = '';
+            
+            let i = 0;
+            const typeTimer = setInterval(() => {
+                if (i < text.length) {
+                    subtitle.textContent += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typeTimer);
+                }
+            }, 50);
+        }
+
+        // Start typing effect after page load
+        setTimeout(typeEffect, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+/* General Setup */
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #949fa6;
+}
+#app-container {
+    width: 100%;
+    max-width: 430px;
+    min-height: 100vh;
+    margin: 0 auto;
+    background-color: #f7f8ff;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* promotion.css */
+/* This part only applies to screens WIDER than 505px */
+        @media (min-width: 505px) {
+            #app-container {
+                max-width: 430px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+        }
+/* Header (Refined) */
+.promo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    /* Change: Simple white background to match the reference */
+    background-color: #fff; 
+}
+.promo-header h1 {
+    margin: 0;
+    font-size: 18px;
+    /* Change: Darker text color */
+    color: #333;
+    font-weight: 600;
+}
+.promo-header img {
+    width: 24px;
+    height: 24px;
+}
+
+/* Main Content */
+.promo-main {
+    padding: 20px 15px 80px 15px;
+}
+
+/* Commission Card (Refined) */
+.commission-card {
+    /* Change: Solid red color instead of gradient */
+    background-color: #fa5a5a; 
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    /* Change: Removed margin-bottom to connect with the card below */
+    margin-bottom: 0; 
+    position: relative;
+    overflow: hidden;
+}
+.commission-card::before {
+    content: '';
+    position: absolute;
+    /* Change: Softer, larger, and better positioned highlight */
+    top: -60px;
+    right: -60px;
+    width: 200px;
+    height: 200px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    z-index: 1;
+}
+.commission-amount {
+    font-size: 48px;
+    font-weight: bold;
+}
+.commission-label {
+    background-color: rgba(255, 255, 255, 0.25);
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    margin: 5px 0 10px 0;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.commission-card p {
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+/* Subordinates Data (Refined) */
+.subordinates-data {
+    display: flex;
+    gap: 15px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    /* Change: Negative margin to overlap the red card above */
+    margin-top: -20px; 
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+.data-column {
+    flex: 1;
+    text-align: center;
+}
+/* Change: Added a vertical divider */
+.data-column:first-child {
+    border-right: 1px solid #f0f0f0;
+}
+.data-column h2 {
+    font-size: 14px;
+    margin: 0 0 15px 0;
+    /* Change: Bolder, darker headings */
+    color: #333;
+    font-weight: 700;
+}
+.data-item {
+    margin-bottom: 15px;
+}
+.data-item span {
+    display: block;
+    font-size: 12px;
+    color: #999;
+}
+.data-item strong {
+    font-size: 20px;
+    color: #fa5a5a;
+}
+
+/* promotion.css */
+
+/* --- Action Buttons, Links & Data Cards --- */
+.promo-actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between each card */
+}
+
+.btn-download-qr {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 25px;
+    background-image: linear-gradient(to right, #fa5a5a, #ff988c);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 5px; /* A little space after the button */
+}
+
+/* Reusable style for all the white cards */
+.info-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.info-card-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+.info-card-text {
+    flex-grow: 1;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.info-card-value {
+    font-size: 14px;
+    color: #888;
+    margin-right: 15px;
+}
+
+.arrow {
+    color: #ccc;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-copy {
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: url('assets/images/copy_icon.png') no-repeat center;
+    background-size: contain;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+/* Specific styles for the last card */
+.promotion-data {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.promotion-data-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.promotion-data-stats {
+    display: flex;
+    text-align: center;
+}
+
+.stat-item {
+    flex: 1;
+}
+
+.stat-item span {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.stat-item p {
+    font-size: 12px;
+    color: #999;
+    margin: 5px 0 0 0;
+}
+
+/* Footer Nav (copied from main style.css for standalone use) */
+
+        .footer-nav {
+          position: fixed; 
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 100%;
+          max-width: 430px;
+          box-sizing: border-box;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          background-color: #ffffff;
+          border-top: 1px solid #f0f0f0;
+          z-index: 1000;
+          padding: 5px 0;
+        }
+
+        .nav-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-decoration: none;
+          color: #949fa6;
+          flex-grow: 1;
+        }
+
+        .nav-icon {
+          width: 24px;
+          height: 24px;
+          margin-bottom: 2px;
+        }
+
+        .nav-text {
+          font-size: 10px;
+          font-weight: 500;
+        }
+
+        .nav-item.active .nav-text {
+          color: #fa5a5a;
+        }
+        .nav-item.active .nav-icon {
+          stroke: #fa5a5a;
+          fill: #fa5a5a1a;
+        }
+
+        /* Special Promotion Button */
+        .nav-item-promo-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+          flex-grow: 1;
+        }
+
+        .promo-cutout {
+          position: absolute;
+          width: 75px;
+          height: 75px;
+          background-color: #f7f8ff;
+          border-radius: 50%;
+          top: -10px;
+          z-index: 1;
+        }
+
+        .promo-button {
+          width: 60px;
+          height: 60px;
+          background-image: linear-gradient(to top, #fa5a5a, #ff988c);
+          border-radius: 50%;
+          border-color: #fff;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: absolute;
+          top: -25px;
+          box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+          z-index: 2;
+        }
+
+        .promo-icon-img {
+          width: 24px;
+          height: 24px;
+        }
+
+        .nav-item-promo-wrapper .nav-text {
+          margin-top: 40px;
+          color: #949fa6;
+        }

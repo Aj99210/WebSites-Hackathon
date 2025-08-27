@@ -1,0 +1,330 @@
+/* General Setup */
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #949fa6; }
+#app-container { width: 100%; min-height: 100vh; background-color: #f7f8ff; position: relative; overflow-x: hidden; }
+@media (min-width: 505px) {
+    #app-container { max-width: 430px; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+}
+
+/* Header Section */
+.account-header {
+    background-image: linear-gradient(to bottom, #ff7575, #fa5a5a);
+    padding: 20px 15px 60px 15px; /* Extra bottom padding to make space for the overlapping card */
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    position: relative;
+}
+.profile-info {
+    display: flex;
+    align-items: center;
+}
+.profile-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 3px solid white;
+    margin-right: 15px;
+}
+.profile-details h2 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+.vip-badge {
+    background-color: rgba(0, 0, 0, 0.2);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    margin-left: 8px;
+    font-weight: 500;
+}
+.profile-details p {
+    margin: 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+}
+.copy-icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: url('assets/images/copy_icon.png') no-repeat center;
+    background-size: contain;
+    margin-left: 5px;
+    opacity: 0.8;
+}
+.last-login {
+    font-size: 10px !important;
+    opacity: 0.7;
+    margin-top: 5px !important;
+}
+
+/* Balance Card (Overlapping) */
+.balance-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    padding: 15px;
+    width: calc(100% - 60px); /* 100% width minus 30px padding on each side */
+    position: absolute;
+    /* This is the trick to make it overlap perfectly */
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 50%);
+}
+.balance-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #999;
+    font-size: 12px;
+}
+.refresh-icon {
+    width: 16px;
+    height: 16px;
+    background: url('assets/images/refresh_icon.png') no-repeat center;
+    background-size: contain;
+    cursor: pointer;
+    opacity: 0.6;
+}
+.balance-amount {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 5px;
+}
+
+/* Main Content Area */
+.account-main {
+    padding: 0 15px 80px 15px;
+}
+
+/* Action Icons */
+.account-actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    text-align: center;
+    /* This top padding creates space for the overlapping balance card */
+    padding-top: 60px;
+}
+.action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+}
+.action-item img {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 8px;
+}
+.action-item span {
+    font-size: 12px;
+}
+
+/* Footer Nav (Copied for consistency) */
+.footer-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; box-sizing: border-box; display: flex; justify-content: space-around; align-items: center; background-color: #ffffff; border-top: 1px solid #f0f0f0; z-index: 1000; padding: 5px 0; }
+.nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #949fa6; flex-grow: 1; }
+.nav-icon { width: 24px; height: 24px; margin-bottom: 2px; }
+.nav-text { font-size: 10px; font-weight: 500; }
+.nav-item.active .nav-text { color: #fa5a5a; }
+.nav-item.active .nav-icon { stroke: #fa5a5a; fill: #fa5a5a1a; }
+.nav-item-promo-wrapper { display: flex; flex-direction: column; align-items: center; position: relative; flex-grow: 1; }
+.promo-cutout { position: absolute; width: 75px; height: 75px; background-color: #f7f8ff; border-radius: 50%; top: -10px; z-index: 1; }
+.promo-button { width: 60px; height: 60px; background-image: linear-gradient(to top, #fa5a5a, #ff988c); border-radius: 50%; display: flex; justify-content: center; align-items: center; position: absolute; top: -25px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 2; }
+.promo-icon-img { width: 24px; height: 24px; }
+.nav-item-promo-wrapper .nav-text { margin-top: 40px; color: #949fa6; }
+
+
+/* account.css */
+
+/* --- Account Info List Section --- */
+.account-info-list {
+    margin-top: 25px;
+}
+
+.info-card-large {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    text-decoration: none;
+    color: #333;
+}
+
+.info-card-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+}
+
+.info-card-text {
+    flex-grow: 1;
+}
+
+.info-card-text h3 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+}
+
+.info-card-text p {
+    margin: 0;
+    font-size: 10px;
+    color: #999;
+    line-height: 1.4;
+}
+
+.info-card-value {
+    display: flex;
+    align-items: center;
+    background-color: #fffbe6; /* Light yellow */
+    color: #f59e0b; /* Amber/Orange */
+    padding: 6px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.info-card-value .arrow {
+    margin-left: 8px;
+    color: #d1d5db;
+}
+
+
+/* History Grid */
+.account-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.info-card-small {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    text-decoration: none;
+    color: #333;
+}
+
+.info-card-small img {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+}
+
+.info-card-small h3 {
+    margin: 0 0 2px 0;
+    font-size: 14px;
+}
+
+.info-card-small p {
+    margin: 0;
+    font-size: 10px;
+    color: #999;
+}
+
+/* account.css */
+
+/* --- Final Links Section --- */
+.final-links-section {
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+/* Links Group */
+.links-group {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    margin-bottom: 15px;
+}
+
+.link-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+}
+.link-item:last-child {
+    border-bottom: none;
+}
+
+.link-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+.link-text {
+    flex-grow: 1;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.link-value {
+    font-size: 14px;
+    color: #999;
+    margin-right: 8px;
+}
+
+.notification-badge {
+    background-color: #fa5a5a;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    margin-right: 8px;
+}
+
+/* Service Center */
+.service-center {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    padding: 15px;
+}
+
+.service-center h3 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+}
+
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 20px;
+    column-gap: 10px;
+}
+
+.service-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+}
+
+.service-item img {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 8px;
+}
+
+.service-item span {
+    font-size: 12px;
+    color: #666;
+}

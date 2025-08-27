@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication - Daman</title>
+    <link rel="stylesheet" href="auth.css">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="app-container">
+
+        <div id="message-box" class="hidden"></div>
+
+        <div id="login-view">
+            <header class="auth-header">
+                <a href="index.html" class="back-arrow">&lt;</a>
+                <div class="logo">
+                    <span class="logo-icon">D</span> Daman
+                </div>
+                <div class="auth-title">
+                    <h2>Log in</h2>
+                    <p>Please log in with your phone number or email<br>If you forget your password, please contact customer service</p>
+                </div>
+            </header>
+
+            <main class="auth-main">
+                <div class="tabs">
+                    <button class="tab-link active" data-tab="phone-login">
+                        <img src="assets/images/phone_icon.png" alt="Phone">
+                        <span>phone number</span>
+                    </button>
+                    <button class="tab-link" data-tab="email-login">
+                        <img src="assets/images/email_icon.png" alt="Email">
+                        <span>Email Login</span>
+                    </button>
+                </div>
+
+                <div id="phone-login" class="tab-content active">
+                    <div class="input-group">
+                        <label><img src="assets/images/phone_label_icon.png" alt=""> Phone number</label>
+                        <div class="input-field phone-field">
+                            <span>+91 &#9662;</span>
+                            <input type="tel" placeholder="Please enter the phone number">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><img src="assets/images/lock_icon.png" alt=""> Password</label>
+                        <div class="input-field">
+                            <input type="password" placeholder="Password">
+                            <span class="toggle-password"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="email-login" class="tab-content">
+                    <div class="input-group">
+                        <label><img src="assets/images/email_icon.png" alt=""> Email</label>
+                        <div class="input-field">
+                            <input type="email" placeholder="Please enter your email">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><img src="assets/images/lock_icon.png" alt=""> Password</label>
+                        <div class="input-field">
+                            <input type="password" placeholder="Password">
+                            <span class="toggle-password"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="remember-group">
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Remember password</label>
+                </div>
+
+                <div class="auth-actions">
+                    <button class="btn-primary-auth">Log In</button>
+                    <button class="btn-secondary-auth" id="goToRegister">Register</button>
+                </div>
+
+                <div class="auth-footer-icons">
+                    <img src="assets/images/footer_lock_icon.png" alt="Security">
+                    <img src="assets/images/footer_chat_icon.png" alt="Support">
+                </div>
+            </main>
+        </div>
+
+        <div id="register-view" style="display: none;">
+            <header class="auth-header">
+                <a href="index.html" class="back-arrow">&lt;</a>
+                <div class="logo">
+                    <span class="logo-icon">D</span> Daman
+                </div>
+                <div class="auth-title">
+                    <h2>Register</h2>
+                    <p>Please register by phone number or email</p>
+                </div>
+            </header>
+            <main class="auth-main">
+                <div class="form-subtitle-wrapper">
+                    <img src="assets/images/email_icon.png" alt="Email">
+                    <p>Register with your email</p>
+                </div>
+
+                <div class="input-group">
+                    <label><img src="assets/images/email_icon.png" alt=""> Email</label>
+                    <div class="input-field">
+                        <input type="email" placeholder="Please enter your email">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label><img src="assets/images/lock_icon.png" alt=""> Set password</label>
+                    <div class="input-field">
+                        <input type="password" placeholder="Set password">
+                        <span class="toggle-password"></span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label><img src="assets/images/lock_icon.png" alt=""> Confirm password</label>
+                    <div class="input-field">
+                        <input type="password" placeholder="Confirm password">
+                        <span class="toggle-password"></span>
+                    </div>
+                </div>
+                
+                <div class="terms-group">
+                    <input type="checkbox" id="terms-reg">
+                    <label for="terms-reg">I have read and agree <a href="#">[Privacy Agreement]</a></label>
+                </div>
+
+                <div class="auth-actions">
+                    <button class="btn-primary-auth">Register</button>
+                    <p class="switch-form-text">I have an account <a href="#" id="goToLogin">Login</a></p>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="auth.js"></script>
+</body>
+</html>

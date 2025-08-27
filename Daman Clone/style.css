@@ -1,0 +1,1289 @@
+/* General Setup */
+        body {
+          margin: 0;
+          font-family: sans-serif;
+          background-color: #949fa6;
+        }
+
+        #app-container {
+          width: 100%;
+          min-height: 100vh;
+          margin: 0 auto;
+          background-color: #f7f8ff;
+          position: relative;
+          overflow-x: hidden;
+        }
+
+        /* This part only applies to screens WIDER than 505px */
+        @media (min-width: 505px) {
+            #app-container {
+                max-width: 430px;
+                margin: 0 auto; /* This centers it */
+                box-shadow: 0 0 20px rgba(0,0,0,0.1); /* Adds a nice shadow on desktop */
+            }
+        }
+
+        /* Header */
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px;
+          background-color: #ffffff;
+        }
+        .logo {
+          font-size: 20px;
+          font-weight: bold;
+          color: #fa5a5a;
+          display: flex;
+          align-items: center;
+        }
+        .logo-icon {
+          background-color: #fa5a5a;
+          color: white;
+          font-weight: 90%;
+          padding: 2px 8px;
+          border-radius: 4px;
+          margin-right: 5px;
+        }
+        .auth-buttons button {
+          border: 1px solid #fa5a5a;
+          border-radius: 5px;
+          padding: 7px 20px;
+          font-size: 10px;
+          cursor: pointer;
+        }
+        .btn-login {
+          background-color: #fff;
+          color: #fa5a5a;
+          margin-right: 10px;
+        }
+        .btn-register {
+          background-image: linear-gradient(to right, #fa5a5a, #ff988c );
+          color: #fff;
+          margin-right: 10px;
+        }
+
+        /* Banner Slider */
+        .slider-wrapper {
+          padding: 0 15px 15px 15px;
+        }
+
+        .slider-container {
+          overflow: hidden;
+          border-radius: 10px;
+          aspect-ratio: 16 / 7;
+        }
+        .slider-track {
+          display: flex;
+          height: 100%;
+          transition: transform 0.5s ease-in-out;
+        }
+        .slider-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          flex-shrink: 0;
+          display: block;
+        }
+
+        /* Announcement Bar */
+        .announcement-bar {
+          display: flex;
+          align-items: center;
+          background-color: #fff;
+          padding: 10px 15px;
+          margin: 0 15px 15px 15px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .speaker-icon {
+          color: #fa5a5a;
+          margin-right: 10px;
+        }
+        .announcement-text {
+          flex-grow: 1;
+          font-size: 12px;
+          color: #333;
+          white-space: nowrap;
+          overflow: hidden;
+          font-weight: bold;
+          text-overflow: ellipsis;
+        }
+        .detail-button {
+          background-image: linear-gradient(to right, #fa5a5a, #ff988c );
+          color: white;
+          border: none;
+          border-radius: 15px;
+          padding: 8px 25px;
+          font-size: 12px;
+          font-weight: bold;
+          margin-left: 10px;
+          cursor: pointer;
+        }
+
+        /* Game Grid - FIXED VERSION */
+        .new-game-grid {
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          gap: 10px;
+          padding: 0 15px 15px 15px;
+        }
+
+        .new-game-item {
+          border-radius: 12px;
+          min-height: 80px;
+          position: relative;
+          cursor: pointer;
+          overflow: hidden;
+          transition: transform 0.2s ease;
+        }
+
+        .new-game-item:hover {
+          transform: scale(1.05);
+        }
+
+        /* 2-3-3 layout pattern */
+        .new-game-item:nth-child(1),
+        .new-game-item:nth-child(2) {
+          grid-column: span 3;
+        }
+
+        .new-game-item:nth-child(n + 3) {
+          grid-column: span 2;
+        }
+
+        /* Game icon positioned on the left */
+        .game-icon {
+          position: absolute;
+          left: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 100px;
+          height: 100px;
+          object-fit: contain;
+          z-index: 2;
+        }
+
+        .new-game-item:nth-child(1) .game-icon,
+        .new-game-item:nth-child(2) .game-icon {
+            width: 105px;
+            height: 105px;
+            left: 5px;
+            top: 45px;  
+        }
+
+        .new-game-item:nth-child(3) .game-icon,
+        .new-game-item:nth-child(4) .game-icon,
+        .new-game-item:nth-child(5) .game-icon{
+            left: -5px;
+            top: 45px;
+        }
+        .new-game-item:nth-child(6) .game-icon,
+        .new-game-item:nth-child(7) .game-icon,
+        .new-game-item:nth-child(8) .game-icon{
+            left: -5px;
+            top: 45px;
+            height: 110px;
+            width: 110px;
+        }
+
+        /* Game name positioned in bottom right */
+        .new-game-name {
+          position: absolute;
+          bottom: 10px;
+          right: 10px;
+          font-size: 14px;
+          font-weight: bold;
+          color: white;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          z-index: 2;
+        }
+
+        /* Gradient backgrounds for each game type */
+         .new-game-item.popular {
+          background: linear-gradient(135deg, #646cff, #9198e5);
+          position: relative;
+          overflow: hidden;
+        }
+        .new-game-item.popular::before {
+          content: '';
+          position: absolute;
+          top: -30px;
+          right: -20px;
+          width: 80px;
+          height: 60px;
+          background: rgba(255,255,255,0.15);
+          border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+          transform: rotate(-15deg);
+        }
+        .new-game-item.popular::after {
+          content: '';
+          position: absolute;
+          bottom: -25px;
+          left: -15px;
+          width: 60px;
+          height: 45px;
+          background: rgba(255,255,255,0.1);
+          border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
+          transform: rotate(25deg);
+        }
+
+        .new-game-item.lottery {
+          background: linear-gradient(135deg, #794dff, #c471ed);
+          position: relative;
+          overflow: hidden;
+        }
+        .new-game-item.lottery::before {
+          content: '';
+          position: absolute;
+          top: -15px;
+          right: -10px;
+          width: 70px;
+          height: 50px;
+          background: rgba(255,255,255,0.2);
+          border-radius: 70% 30% 60% 40% / 30% 60% 40% 70%;
+          transform: rotate(20deg);
+        }
+        .new-game-item.lottery::after {
+          content: '';
+          position: absolute;
+          bottom: -20px;
+          left: -25px;
+          width: 55px;
+          height: 40px;
+          background: rgba(255,255,255,0.12);
+          border-radius: 50% 50% 80% 20% / 25% 75% 25% 75%;
+          transform: rotate(-10deg);
+        }
+
+        .new-game-item.casino {
+          background: linear-gradient(135deg, #ff8b27, #ffc849);
+          position: relative;
+          overflow: hidden;
+        }
+        .new-game-item.casino::before {
+          content: '';
+          position: absolute;
+          top: -25px;
+          right: -15px;
+          width: 75px;
+          height: 55px;
+          background: rgba(255,255,255,0.18);
+          border-radius: 80% 20% 40% 60% / 70% 30% 60% 40%;
+          transform: rotate(-20deg);
+        }
+
+        .new-game-item.slots {
+          background: linear-gradient(135deg, #ff4d4d, #f9886c);
+          position: relative;
+          overflow: hidden;
+        }
+        .new-game-item.slots::before {
+          content: '';
+          position: absolute;
+          top: -20px;
+          left: 60%;
+          width: 65px;
+          height: 50px;
+          background: rgba(255,255,255,0.16);
+          border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+          transform: rotate(15deg);
+        }
+        .new-game-item.slots::after {
+          content: '';
+          position: absolute;
+          bottom: -15px;
+          right: -20px;
+          width: 45px;
+          height: 35px;
+          background: rgba(255,255,255,0.12);
+          border-radius: 60% 40% 80% 20% / 40% 60% 40% 60%;
+          transform: rotate(-25deg);
+        }
+
+        .new-game-item.sports {
+          background: linear-gradient(135deg, #28bcff, #38e5e8);
+          position: relative;
+          overflow: hidden;
+        }
+        .new-game-item.sports::before {
+          content: '';
+          position: absolute;
+          top: -18px;
+          right: -12px;
+          width: 68px;
+          height: 52px;
+          background: rgba(255,255,255,0.17);
+          border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+          transform: rotate(10deg);
+        }
+
+        .new-game-item.rummy {
+          background: linear-gradient(135deg, #ff4d8b, #ff7e5f);
+          position: relative;
+          overflow: hidden;
+        }
+        .new-game-item.rummy::before {
+          content: '';
+          position: absolute;
+          top: -22px;
+          right: -18px;
+          width: 72px;
+          height: 48px;
+          background: rgba(255,255,255,0.19);
+          border-radius: 70% 30% 30% 70% / 60% 40% 60% 40%;
+          transform: rotate(-12deg);
+        }
+        .new-game-item.rummy::after {
+          content: '';
+          position: absolute;
+          bottom: -18px;
+          left: -10px;
+          width: 50px;
+          height: 38px;
+          background: rgba(255,255,255,0.13);
+          border-radius: 40% 60% 60% 40% / 70% 30% 70% 30%;
+          transform: rotate(18deg);
+        }
+
+        .new-game-item.fishing {
+          background: linear-gradient(135deg, #ff6b6b, #ffa726);
+          position: relative;
+          overflow: hidden;
+        }
+        .new-game-item.fishing::before {
+          content: '';
+          position: absolute;
+          top: -16px;
+          left: 65%;
+          width: 62px;
+          height: 48px;
+          background: rgba(255,255,255,0.16);
+          border-radius: 80% 20% 60% 40% / 50% 50% 50% 50%;
+          transform: rotate(-8deg);
+        }
+
+        .new-game-item.original {
+          background: linear-gradient(135deg, #42a5f5, #66d9ef);
+          position: relative;
+          overflow: hidden;
+        }
+        .new-game-item.original::before {
+          content: '';
+          position: absolute;
+          top: -20px;
+          right: -14px;
+          width: 66px;
+          height: 50px;
+          background: rgba(255,255,255,0.18);
+          border-radius: 60% 40% 40% 60% / 40% 60% 40% 60%;
+          transform: rotate(22deg);
+        }
+        .new-game-item.original::after {
+          content: '';
+          position: absolute;
+          bottom: -12px;
+          left: 60%;
+          width: 42px;
+          height: 32px;
+          background: rgba(255,255,255,0.14);
+          border-radius: 50% 50% 70% 30% / 30% 70% 30% 70%;
+          transform: rotate(-15deg);
+        }
+
+
+/* --- Footer Navigation Bar --- */
+.footer-nav {
+  /* Change 1: Use position: fixed */
+  position: fixed; 
+  bottom: 0;
+
+  /* This centers the fixed bar within the viewport to match the app container */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px; /* Must match your #app-container max-width */
+  box-sizing: border-box; /* Ensures padding is included in the width */
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #ffffff;
+  border-top: 1px solid #f0f0f0;
+  z-index: 1000;
+  padding: 5px 0;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #949fa6;
+  flex-grow: 1;
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 2px;
+}
+
+.nav-text {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.nav-item.active .nav-text {
+  color: #fa5a5a;
+}
+.nav-item.active .nav-icon {
+  stroke: #fa5a5a;
+  fill: #fa5a5a1a;
+}
+
+/* --- Special Promotion Button (Polished Version) --- */
+.nav-item-promo-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex-grow: 1;
+}
+
+.promo-cutout {
+  position: absolute;
+  width: 75px;
+  height: 75px;
+  background-color: #f7f8ff; /* Same color as the app background */
+  border-radius: 50%;
+  top: -10px; /* Position it to create the curve */
+  z-index: 1; /* Sits just above the white nav bar */
+}
+
+.promo-button {
+  width: 60px;
+  height: 60px;
+  background-image: linear-gradient(to top, #fa5a5a, #ff988c);
+  border-radius: 50%;
+  border-color: #fff;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: -25px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  z-index: 2; /* Sits on top of the cutout shape */
+}
+
+
+
+/* Change 3: Style for the new diamond image */
+.promo-icon-img {
+  width: 24px; /* A bit larger than 16px to look good in the button */
+  height: 24px;
+}
+
+.nav-item-promo-wrapper .nav-text {
+  margin-top: 40px;
+  color: #949fa6;
+}
+
+
+/* --- Reusable Content Section Styles --- */
+.content-section {
+  padding: 20px 15px;
+  margin-bottom: 5px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* The little fire icon */
+.section-title::before {
+  content: '🔥'; /* Using an emoji for the icon */
+  margin-right: 8px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.section-all-link {
+  text-decoration: none;
+  color: #fa5a5a;
+  background-color: transparent;
+  padding: 5px 20px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.recommendation-card {
+  position: relative;
+  aspect-ratio: 2 / 3; /* Gives the card its vertical shape */
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  overflow: hidden; /* Ensures the odds-bar corners are clipped correctly */
+}
+
+.odds-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black */
+  backdrop-filter: blur(5px); /* Frosted glass effect */
+  color: white;
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.odds-percentage {
+  font-weight: bold;
+  color: #ffeb3b; /* Yellow color for the percentage */
+}
+
+
+/* --- Lottery Section --- */
+
+.lottery-section {
+    padding: 20px 15px;
+}
+
+/* Fix 1: Style the heading and its new indicator bar */
+.lottery-section .section-title {
+    position: relative;
+    padding-left: 12px; /* Make space for the bar */
+}
+
+.lottery-section .section-title::before {
+    content: ''; /* This is our new indicator bar */
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px; /* Thicker bar */
+    height: 20px;
+    background-color: #fa5a5a;
+    border-radius: 2px;
+}
+
+.lottery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.lottery-item {
+    /* Fix 2: Taller aspect ratio */
+    aspect-ratio: 4.5 / 5; 
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    /* This pushes the text to the top and image to the bottom */
+    justify-content: space-between; 
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    padding: 15px 5px; /* Added padding */
+
+    /* Fix 3: Layered gradient for the "sheen" effect */
+    background: 
+        /* Top Layer: The semi-circle glow */
+        radial-gradient(circle at 195% 10%, rgba(255, 255, 255, 0.07) 70%, rgba(255, 255, 255, 0) 50%),
+        /* Bottom Layer: The main color gradient */
+        linear-gradient(to bottom, #ff7777, #fa5a5a);
+}
+
+.lottery-item img {
+    margin-top: 10px;
+    width: 90%; /* Slightly larger icon */
+    height: auto;
+}
+
+.lottery-item-text {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+
+.lottery-banner {
+    background: 
+        radial-gradient(circle at 195% 10%, rgba(255, 255, 255, 0.07) 70%, rgba(255, 255, 255, 0) 50%),
+        linear-gradient(to bottom, #ff7777, #fa5a5a);
+    
+    border-radius: 10px;
+    margin-top: 5px;
+    overflow: hidden;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.lottery-banner-content {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.dragon-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dragon-image img {
+    width: 70%;
+    height: auto;
+    display: block;
+}
+
+.banner-text {
+    flex-grow: 1;
+    color: white;
+}
+
+.banner-text h3 {
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.banner-text p {
+    font-size: 12px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+
+/* --- Original Section --- */
+.original-section .section-title {
+    position: relative;
+    padding-left: 15px; /* Increased padding for the thicker bar */
+    font-weight: bold; /* Change 3: Make heading bold */
+}
+
+.original-section .section-title::before {
+    content: ''; 
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;   /* Change 2: Slightly wider */
+    height: 20px; /* Change 2: Slightly taller */
+    background-color: #fa5a5a;
+    border-radius: 2px;
+}
+
+.original-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.original-card {
+  /* Change 1: Make cards rectangular */
+  aspect-ratio: 3 / 4; 
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+}
+
+.original-section {margin-bottom: 0px;}
+
+/* --- Slots Section --- */
+.slots-section .section-title {
+    position: relative;
+    padding-left: 15px;
+    font-weight: bold;
+}
+
+.slots-section .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 20px;
+    background-color: #fa5a5a;
+    border-radius: 2px;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.slots-card {
+  aspect-ratio: 3 / 4;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+}
+
+/* --- Sports Section --- */
+.sports-section .section-title {
+    position: relative;
+    padding-left: 15px;
+    font-weight: bold;
+}
+
+.sports-section .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 20px;
+    background-color: #fa5a5a;
+    border-radius: 2px;
+}
+
+.sports-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.sports-card {
+  aspect-ratio: 3 / 4;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+}
+
+/* --- Casino Section --- */
+.casino-section .section-title {
+    position: relative;
+    padding-left: 15px;
+    font-weight: bold;
+}
+
+.casino-section .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 20px;
+    background-color: #fa5a5a;
+    border-radius: 2px;
+}
+
+.casino-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.casino-card {
+  aspect-ratio: 3 / 4;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+}
+
+/* --- Fishing Section --- */
+.fishing-section .section-title {
+    position: relative;
+    padding-left: 15px;
+    font-weight: bold;
+}
+
+.fishing-section .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 20px;
+    background-color: #fa5a5a;
+    border-radius: 2px;
+}
+
+.fishing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.fishing-card {
+  aspect-ratio: 3 / 4;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+}
+
+
+/* --- Rummy Section --- */
+.rummy-section .section-title {
+    position: relative;
+    padding-left: 15px;
+    font-weight: bold;
+}
+
+.rummy-section .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 20px;
+    background-color: #fa5a5a;
+    border-radius: 2px;
+}
+
+.rummy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.rummy-card {
+  aspect-ratio: 3 / 4;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+}
+
+
+
+/* --- Winning Information Section --- */
+.winning-section .section-title {
+    position: relative;
+    padding-left: 15px;
+    font-weight: bold;
+}
+
+.winning-section .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 20px;
+    background-color: #fa5a5a;
+    border-radius: 2px;
+}
+
+.winning-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.winner-item {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    
+    /* Animation properties */
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+}
+
+.winner-item.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.winner-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.winner-name {
+    flex-grow: 1;
+    font-size: 14px;
+    color: #333;
+}
+
+.winner-game-icon {
+    width: 60px;
+    height: 35px;
+    object-fit: contain;
+    margin-right: 15px;
+}
+
+.winner-details {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.win-amount {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.win-label {
+    font-size: 12px;
+    color: #999;
+}
+
+
+/* --- Today's Earnings Chart Section --- */
+.earnings-chart-section .section-title {
+    position: relative;
+    padding-left: 15px;
+    font-weight: bold;
+}
+
+.earnings-chart-section .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 20px;
+    background-color: #fa5a5a;
+    border-radius: 2px;
+}
+
+/* Podium Container */
+.earnings-podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 5px;
+    margin-top: 60px; /* Keeps podium below heading */
+    padding: 0 15px;
+    position: relative;
+}
+
+.podium-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+    border-radius: 12px;
+    padding-top: 40px; 
+    padding-bottom: 15px;
+    color: white;
+    /* Change 2: Softer, layered shadow for a cleaner 3D effect */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Rank 1 (Center) */
+.podium-item.rank-1 {
+    width: 34%;
+    order: 2;
+    margin-bottom: 20px;
+    /* Polished gradient */
+    background-image: linear-gradient(160deg, #ff7575, #e53935);
+}
+
+/* Rank 2 (Left) */
+.podium-item.rank-2 {
+    order: 1;
+    /* Polished gradient */
+    background-image: linear-gradient(160deg, #c158dc, #8e24aa);
+}
+
+/* Rank 3 (Right) */
+.podium-item.rank-3 {
+    order: 3;
+    /* Polished gradient */
+    background-image: linear-gradient(160deg, #ffb74d, #fb8c00);
+}
+
+
+/* Avatars and Crowns */
+.podium-avatar-wrapper {
+    position: absolute;
+    top: -35px;
+    border: 3px solid white;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Add shadow to avatar */
+}
+.podium-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: block;
+}
+
+.podium-crown {
+    position: absolute;
+    z-index: 10;
+    /* Change 1: Moved crowns to the LEFT side and down a bit */
+    top: -50px;
+    left: 25%; 
+    transform: translateX(-50%) rotate(-15deg);
+    width: 30px;
+    height: 30px;
+}
+
+.podium-item.rank-1 .podium-avatar {
+    width: 70px;
+    height: 70px;
+    left: 10%;
+}
+.podium-item.rank-1 .podium-crown {
+    width: 40px;
+    height: 40px;
+    top: -52px;
+    left: 26.9%;
+}
+
+
+/* Podium Text Styling */
+.podium-rank-label {
+    font-size: 10px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.7);
+}
+.podium-username {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 4px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.podium-earnings {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    padding: 4px 12px;
+    font-size: 12px;
+    margin-top: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+/* Ranks 4+ List (no changes) */
+.earnings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.list-item {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.list-rank {
+    font-size: 16px;
+    font-weight: bold;
+    color: #999;
+    width: 30px;
+    text-align: center;
+}
+
+.list-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 5px;
+    margin-right: 10px;
+}
+
+.list-username {
+    font-size: 14px;
+    color: #333;
+}
+
+.list-earnings {
+    margin-left: auto; /* Pushes to the right */
+    background-image: linear-gradient(to right, #fa5a5a, #ff988c);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 20px;
+}
+
+
+/* --- Info & Links Section --- */
+.info-section {
+    padding: 20px 15px;
+    background-color: #fff; /* White background for this section */
+}
+
+.info-text-block p {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0 0 10px 0;
+    padding-left: 15px;
+    position: relative;
+    font-weight: bold;
+}
+
+.info-text-block p::before {
+    content: '◆'; /* Diamond bullet point */
+    color: #fa5a5a;
+    position: absolute;
+    left: 0;
+    top: 2px;
+}
+
+.info-text-block p.warning-text {
+    color: #f57c00; /* Orange warning color */
+}
+.info-text-block p.warning-text::before {
+    content: ''; /* Remove diamond from this line */
+}
+.info-text-block p:last-of-type::before {
+    content: ''; /* Remove diamond from the last line */
+}
+
+.info-links-list {
+    margin-top: 20px;
+    margin-bottom: 50px;
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+}
+
+.info-link-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+}
+.info-link-item:last-child {
+    border-bottom: none; /* Remove border from last item */
+}
+
+.info-text {
+    flex-grow: 1; /* Pushes the arrow to the right */
+    font-size: 14px;
+}
+
+.info-arrow {
+    font-size: 16px;
+    color: #ccc;
+}
+
+/* Icons using background images */
+.info-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 15px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.language-icon { background-image: url('assets/images/language_icon.png'); }
+.announcement-icon { background-image: url('assets/images/announcement_icon.png'); }
+.service-icon { background-image: url('assets/images/service_icon.png'); }
+.guide-icon { background-image: url('assets/images/guide_icon.png'); }
+.about-icon { background-image: url('assets/images/about_icon.png'); }
+.download-icon { background-image: url('assets/images/download_icon.png'); }
+
+
+
+/* --- User Profile Header --- */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #fa5a5a;
+    cursor: pointer;
+}
+
+.btn-logout {
+    background: none;
+    border: 1px solid #fa5a5a;
+    color: #fa5a5a;
+    border-radius: 5px;
+    padding: 7px 15px;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* --- Message Box --- */
+#message-box {
+     position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px 25px;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    max-width: 80%;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7); /* Greyish transparent background */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    pointer-events: none; /* Prevents interaction while hidden */
+}
+#message-box.show {
+    opacity: 1;
+    
+}
+#message-box.hidden {
+    display: none;
+}
